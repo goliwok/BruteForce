@@ -12,3 +12,10 @@ export CXX=/usr/bin/clang++
 cmake .
 
 3) run make
+
+TODO:
+
+- [] rainbow tables
+- [] multithreads
+- [] CUDA
+- [] improve options
