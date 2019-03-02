@@ -18,7 +18,8 @@ int     main (int ac, char **av)
     std::string key = std::string(av[1]);        
     Arguments *options = new Arguments(ac, av);
     options->setHash(false);
-    options->parseArguments(key);    
+    if (ac > 2)
+        options->parseArguments(key);    
     BruteForce bf(options, key);
     std::string playground(key.length(), 'a');
     if (!options->getHash() == false)
