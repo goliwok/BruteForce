@@ -37,11 +37,10 @@ int    Arguments::checkInput(std::string input)
     return 0;
 }
 
-void    Arguments::manageArgsHash()
-{
-           
-}
-
+/*
+ by default, digits, letters and symbols are used. with options you can aim for example
+ digits and symbols. but you if you don't include the good flags with your input the program will exist
+ */
 void    Arguments::manageArgs()
 {
     if (!in_array("-d", opts))
@@ -58,13 +57,13 @@ void    Arguments::parseArguments(std::string key)
     {
         hashType = opts[1];
         isHash = true;
-        manageArgsHash();
         return;
     }
     manageArgs();
     if (checkInput(key) == 1)
     {
-        std::cout << "Bad input, you have to set the good option with the input" << std::endl;
+        std::cout << "Bad input, you have to set the good option according to your input " << 
+        "or I will not be able to find something " << std::endl;
         delete this;
         exit (1);
     }
