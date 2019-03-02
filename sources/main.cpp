@@ -5,7 +5,7 @@ void    printHelp()
 {
     std::cout << 
         "USAGE: ./Bf <key> [-l] [-s] [-d]\n \n -l:\tletters\n -s:\tsymbols\n -d:\tdigits \n\n"
-        << "OR -hash: \n [sha1] \n [md5] \n [sha3] \n [HMAC]"
+        << "OR -hash <hash>: \n [sha1] \n [md5]"
         << std::endl;
     exit (1);
 }
