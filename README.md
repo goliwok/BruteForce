@@ -15,7 +15,7 @@ cmake .
 
 TODO:
 
-- [] rainbow tables
-- [] multithreads
-- [] CUDA
-- [] improve options
+- [ ] rainbow tables
+- [ ] multithreads
+- [ ] CUDA
+- [ ] improve options
