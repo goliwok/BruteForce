@@ -5,7 +5,7 @@ void    printHelp()
 {
     std::cout << 
         "USAGE: ./Bf <key> [-l] [-s] [-d]\n \n -l:\tletters\n -s:\tsymbols\n -d:\tdigits \n\n"
-        << "OR -hash <hash>: \n [sha1] \n [md5]"
+        << "OR ./Bf <hash> -hash <hashType>: \n [sha1] \n [md5]"
         << std::endl;
     exit (1);
 }
@@ -22,10 +22,10 @@ int     main (int ac, char **av)
         options->parseArguments(key);    
     BruteForce bf(options, key);
     std::string playground(key.length(), 'a');
-    if (!options->getHash() == false)
+    if (options->getHash())
         playground = "a";
     clock_t start = clock();
-    if (options->getHash() == false)
+    if (!options->getHash())
         returnValue = bf.word(playground, key.length(), 0, false);
     else
         returnValue = bf.initHash(playground, 0, false);
