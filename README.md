@@ -19,3 +19,4 @@ TODO:
 - [ ] multithreads
 - [ ] CUDA
 - [ ] improve options
+- [ ] clean and improve understanding of the code
