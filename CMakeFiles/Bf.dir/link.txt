@@ -1,1 +1,0 @@
-/usr/bin/c++  -lssl -lcrypto -v -Wall -fsanitize=address  -rdynamic CMakeFiles/Bf.dir/sources/bruteforce.cpp.o CMakeFiles/Bf.dir/sources/arguments.cpp.o CMakeFiles/Bf.dir/sources/main.cpp.o  -o Bf 
