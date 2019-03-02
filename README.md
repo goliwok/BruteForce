@@ -20,3 +20,4 @@ TODO:
 - [ ] CUDA
 - [ ] improve options
 - [ ] clean and improve understanding of the code
+- [ ] compile with clang and g++, compare perf
