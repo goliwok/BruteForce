@@ -5,12 +5,12 @@
 #include        <vector>
 #include        <algorithm>
 #include        <functional>
-#include "Lib/argparse.hpp"
+#include        "Lib/argparse.hpp"
 
 class           Arguments
 {
     public:
-        Arguments(/*int, const char ***/ArgumentParser &parser);
+        Arguments(ArgumentParser &parser);
         ~Arguments();
 
         void        parseArguments(std::string key);

@@ -4,6 +4,16 @@ Arguments::Arguments(ArgumentParser &_parser)
 {
     parser = _parser;
     isHash = false;
+    ArgumentParser parser;
+
+    parser.addArgument("-l", "--letters");
+    parser.addArgument("-s", "--symbols");
+    parser.addArgument("-d", "--digits");
+    parser.addArgument("-h", "--hash", 1);
+    parser.addArgument("-z", "--zip");
+    parser.addFinalArgument("Input");
+
+    parser.parse(ac, av);
     toIterate = { std::make_pair(65, 90), std::make_pair(97, 122), 
                 std::make_pair(33, 47), std::make_pair(58, 64), 
                 std::make_pair(91, 96), std::make_pair(123, 126),

@@ -1,16 +1,6 @@
 #include "bruteForce.hpp"
 #include "zipCracker.hpp"
 #include "arguments.hpp"
-#include "Lib/argparse.hpp"
-
-void    printHelp()
-{
-    std::cout << 
-        "USAGE: ./Bf <key> [-l] [-s] [-d]\n \n -l:\tletters\n -s:\tsymbols\n -d:\tdigits \n\n"
-        << "OR ./Bf <hash> -hash <hashType>: \n [sha1] \n [md5]"
-        << std::endl;
-    exit (1);
-}
 
 int     main (int ac, const char **av)
 {
@@ -26,11 +16,11 @@ int     main (int ac, const char **av)
     parser.parse(ac, av);
 
     int returnValue = 0;
-    std::string key = parser.retrieve<std::string>("Input");
     Arguments *options = new Arguments(parser);
+    std::string key = parser.retrieve<std::string>("Input");
     options->parseArguments(key);
     if (parser.exists("zip")){
-        zipCracker *cracker = new zipCracker(av[2]);
+        zipCracker *cracker = new zipCracker(key);
         cracker->isValid();
         exit(0);
     }
