@@ -24,10 +24,13 @@ class           zipCracker
     private:
     	bool				_checkHeader(void);
     	bool 				_getCentralDirectory(void);
+		void 				_initStructures(void);
 
     	const std::string	_filename;
     	std::ifstream		_file;
     	size_t				_start, _end;
+
+    	centralDirectory	_cd;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/

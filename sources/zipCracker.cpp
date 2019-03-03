@@ -12,15 +12,15 @@ zipCracker::zipCracker(const std::string& filename) :
 	_filename(filename),
 	_file(filename.c_str(), std::ios::in | std::ios::binary),
 	_start(0),
-	_end(0)
+	_end(0),
+	_cd({}) 
 {
 	std::cout << "new zipcracker with file:"<< filename<<std::endl;	
 }
 
 zipCracker::~zipCracker() {}
 
-bool		zipCracker::_checkHeader(void) 
-{	
+bool		zipCracker::_checkHeader(void) {	
 	uint32_t	*header_signature = new uint32_t;
 	uint32_t	zip_signature = 0x04034b50;
 	bool		found;
@@ -57,8 +57,11 @@ bool		zipCracker::_getCentralDirectory(void) {
 	return found;
 }
 
-bool		zipCracker::isValid(void)
-{
+void		zipCracker::_initStructures(void) {
+	zipReader::readCentralDirectory(&_cd, _file, _start);
+}
+
+bool		zipCracker::isValid(void) {
 	if (!_file.is_open()) {
 		std::cerr << "I can't open this file -> " << _filename <<std::endl;
 		return false;
@@ -78,5 +81,6 @@ bool		zipCracker::isValid(void)
 		return false;
 	}
 	std::cout << "Central directory: "<< _start << ";" << _end << std::endl;
+	_initStructures();
 	return true;
 }

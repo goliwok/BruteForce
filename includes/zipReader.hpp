@@ -10,9 +10,10 @@
 #define         _ZIPREADER_HPP_
 
 #include		<iostream>
+#include        <fstream>
 
 struct centralDirectory {
-    uint32_t header_signature;
+    uint32_t headerSignature;
     uint16_t versionMadeBy;
     uint16_t versionNeededToExtract;
     uint16_t bitFlag;
@@ -32,6 +33,8 @@ struct centralDirectory {
     char    *filename;
     char    *extraField;
     char    *fileComment;
+    bool    isEncrypted;
+    bool strongEncryption;
 };
 
 struct endOfCentralDirectory {
@@ -43,7 +46,7 @@ struct localFileHeader {
 };
 
 namespace   zipReader {
-    void    toto();
+    void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file, const size_t offset);
 }
 
 #endif      /*_ZIPREADER_HPP_*/
