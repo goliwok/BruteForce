@@ -1,3 +1,11 @@
+/**
+    zipCracker.cpp
+    Purpose: brute force encrypted zip files
+
+    @author Louis JURCZYK
+    @version 1.0 03/03/19
+*/
+
 #include	"zipCracker.hpp"
 
 zipCracker::zipCracker(const std::string& filename) : 
@@ -32,23 +40,18 @@ bool		zipCracker::_getCentralDirectory(void) {
 
 	_file.seekg(-4, std::ios::end);
 	i = _file.tellg();
-	while (i > 3) {
+	for (; i > 3; --i) {
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
-		if (!found_end) {
-			if (*signature == end_signature){
+		if (!found_end && *signature == end_signature) {
 				_end = i;
 				found_end = true;
 				i -= 2;
-			}
-		} else {
-			if (*signature == start_signature) {
+		} else if (*signature == start_signature) {
 				_start = i;
 				found = true;
 				break;
-			}
 		}
-		--i;
 	}
 	delete signature;
 	return found;

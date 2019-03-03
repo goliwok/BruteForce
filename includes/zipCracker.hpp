@@ -1,3 +1,11 @@
+/**
+    zipCracker.hpp
+    Purpose: brute force encrypted zip files
+
+    @author Louis JURCZYK
+    @version 1.0 03/03/19
+*/
+
 #ifndef         _ZIPCRACKER_HPP_
 #define         _ZIPCRACKER_HPP_
 
