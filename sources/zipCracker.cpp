@@ -11,8 +11,7 @@
 zipCracker::zipCracker(const std::string& filename) : 
 	_filename(filename),
 	_file(filename.c_str(), std::ios::in | std::ios::binary),
-	_start(0),
-	_end(0),
+	_eocd_offset(0),
 	_cd({}),
 	_eocd({})
 {
@@ -32,25 +31,20 @@ bool		zipCracker::_checkHeader(void) {
 	return found;
 }
 
-bool		zipCracker::_getCentralDirectory(void) {
+bool			zipCracker::_getEndOfCentralDirectoryOffset(void) {
 	uint32_t	*signature = new uint32_t;
-	bool		found_end = false, found = false;;
-	uint32_t	start_signature = 0x02014b50;
-	uint32_t	end_signature = 0x06054b50;
+	uint32_t	eocd_signature = 0x06054b50;
+	bool		found;
 	size_t	i;
 
 	_file.seekg(-4, std::ios::end);
 	i = _file.tellg();
-	for (; i > 3; --i) {
+	for (;; --i) {
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
-		if (!found_end && *signature == end_signature) {
-				_end = i;
-				found_end = true;
-				i -= 2;
-		} else if (*signature == start_signature) {
-				_start = i;
+		if (*signature == eocd_signature) {
 				found = true;
+				_eocd_offset = i;
 				break;
 		}
 	}
@@ -59,8 +53,10 @@ bool		zipCracker::_getCentralDirectory(void) {
 }
 
 void		zipCracker::_initStructures(void) {
-	zipReader::readCentralDirectory(&_cd, _file, _start);
-	zipReader::readEndOfCentralDirectory(&_eocd, _file, _end);
+	zipReader::readEndOfCentralDirectory(&_eocd, _file, _eocd_offset);
+	centralDirectory toto;
+	zipReader::readCentralDirectory(&toto, _file, _eocd.centralDirectoryOffset);
+	//std::cout << _eocd.numberOfEntries<< ";at " <<std::hex << _eocd.centralDirectoryOffset << std::endl;
 }
 
 bool		zipCracker::isValid(void) {
@@ -78,11 +74,11 @@ bool		zipCracker::isValid(void) {
 		std::cerr << "The file size is " << size << " bytes, but the minimum size is 22 bytes." << std::endl;
 		return false;
 	}
-	if (!_getCentralDirectory()) {
+	if (!_getEndOfCentralDirectoryOffset()) {
 		std::cerr << "Unable to find Central Directory." << std::endl;
 		return false;
 	}
-	std::cout << "Central directory: "<< _start << ";" << _end << std::endl;
+	std::cout << "Found Central directory at: 0x"<< std::hex <<_eocd_offset<< std::endl;
 	_initStructures();
 	return true;
 }

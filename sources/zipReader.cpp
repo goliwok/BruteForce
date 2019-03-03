@@ -9,8 +9,9 @@
 #include	"zipReader.hpp"
 
 namespace   zipReader {
-	void	readCentralDirectory(struct centralDirectory *dest, std::ifstream& file, const size_t offset) {
+	void	readCentralDirectory(struct centralDirectory* dest, std::ifstream& file, const size_t offset) {
 		file.seekg(offset, std::ios::beg);
+		std::cout << "@@@@@@@@@@@@@@@@@"<<file.tellg() << std::endl;
 		file.read(reinterpret_cast<char *>(&dest->headerSignature),			4);
 		file.read(reinterpret_cast<char *>(&dest->versionMadeBy),			2);
 		file.read(reinterpret_cast<char *>(&dest->versionNeededToExtract),	2);
@@ -50,7 +51,7 @@ namespace   zipReader {
 			dest->strongEncryption = true;
 
 		std::cout << "@@@@@@ CENTRAL DIRECTORY @@@@@@" << std::endl;
-		std::cout << "starts at position: "<< std::hex  << offset << std::endl;
+		std::cout << "starts at position: " << offset << std::endl;
 		std::cout << "header signature: " << reinterpret_cast<unsigned int*>(dest->headerSignature)<<std::endl;
 		std::cout << "version made by: " << dest->versionMadeBy <<std::endl;
 		std::cout << "version needed to extract: " << dest->versionNeededToExtract <<std::endl;
@@ -100,6 +101,5 @@ namespace   zipReader {
 		std::cout << "central dir offset: " <<  dest->centralDirectoryOffset << std::endl;
 		if (dest->commentLength > 0)
 			std::cout << "comment: " <<  dest->comment << std::endl;
-
 	}
 }

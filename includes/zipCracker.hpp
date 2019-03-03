@@ -11,6 +11,7 @@
 
 #include		<iostream>
 #include		<fstream>
+#include		<vector>
 #include		"zipReader.hpp"
 
 class           zipCracker
@@ -23,15 +24,16 @@ class           zipCracker
 
     private:
     	bool				_checkHeader(void);
-    	bool 				_getCentralDirectory(void);
+    	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);
 
     	const std::string	_filename;
     	std::ifstream		_file;
-    	size_t				_start, _end;
+    	size_t				_eocd_offset;
 
-    	centralDirectory	_cd;
-    	endOfCentralDirectory _eocd;
+    	std::vector<centralDirectory>		_cd;
+    	endOfCentralDirectory 				_eocd;
+    	std::vector<localFileHeader>		_lfh;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/
