@@ -3,6 +3,7 @@
 Arguments::Arguments(int ac, char **av)
 {
     nbArgs = ac;
+    zipFile = "";
     for (int i = 2 ; i != nbArgs ; i++)
         opts.push_back(std::string(av[i]));
     toIterate = { std::make_pair(65, 90), std::make_pair(97, 122), 
@@ -55,8 +56,17 @@ void    Arguments::parseArguments(std::string key)
 {
     if (in_array("-hash", opts))
     {
+        std::cout << "lll" << std::endl;
         hashType = opts[1];
         isHash = true;
+        return;
+    } else if (key == "-zip") {
+        std::cout << "ll" << std::endl;
+            if (opts.empty() || opts[0].empty()){
+                std::cout << "Give me a filename !!!!!!!" << std::endl;
+                exit(1);
+            } else
+                zipFile = opts[0];
         return;
     }
     manageArgs();

@@ -1,4 +1,5 @@
 #include "bruteForce.hpp"
+#include "zipCracker.hpp"
 #include "arguments.hpp"
 
 void    printHelp()
@@ -15,11 +16,16 @@ int     main (int ac, char **av)
     int returnValue = 0;
     if (ac < 2)
         printHelp();
-    std::string key = std::string(av[1]);        
+    std::string key = std::string(av[1]);
     Arguments *options = new Arguments(ac, av);
     options->setHash(false);
-    if (ac > 2)
+    if (ac > 2 || key == "-zip") {
         options->parseArguments(key);    
+    }
+    if (options->isZip()){
+        std::cout << "Exec zipcracker" << std::endl;
+        exit(0);
+    }
     BruteForce bf(options, key);
     std::string playground(key.length(), 'a');
     if (options->getHash())

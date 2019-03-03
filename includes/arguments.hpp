@@ -17,6 +17,7 @@ class           Arguments
         std::vector<std::pair<int, int>> &getToIterate();
         void        setHash(bool);
         bool        getHash();
+        bool        isZip() {return !zipFile.empty();};
 
     private:
         std::vector<std::string>            opts;
@@ -24,6 +25,7 @@ class           Arguments
         std::vector<std::pair<int, int>>    toIterate;
         std::string                         hashType;
         bool                                isHash;
+        std::string                         zipFile;
 
         std::function<int()> hashFunction;
 
