@@ -56,12 +56,10 @@ void    Arguments::parseArguments(std::string key)
 {
     if (in_array("-hash", opts))
     {
-        std::cout << "lll" << std::endl;
         hashType = opts[1];
         isHash = true;
         return;
     } else if (key == "-zip") {
-        std::cout << "ll" << std::endl;
             if (opts.empty() || opts[0].empty()){
                 std::cout << "Give me a filename !!!!!!!" << std::endl;
                 exit(1);

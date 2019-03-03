@@ -23,7 +23,7 @@ int     main (int ac, char **av)
         options->parseArguments(key);    
     }
     if (options->isZip()){
-        std::cout << "Exec zipcracker" << std::endl;
+        zipCracker *cracker = new zipCracker;
         exit(0);
     }
     BruteForce bf(options, key);

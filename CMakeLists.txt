@@ -8,7 +8,9 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/bruteForce.hpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/arguments.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/arguments.hpp
-                    ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp)
+                    ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
+		    ${CMAKE_CURRENT_LIST_DIR}/sources/zipCracker.cpp
+ 	            ${CMAKE_CURRENT_LIST_DIR}/includes/zipCracker.hpp)
 
 find_package(OpenSSL)
 set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address") #-Wshadow
