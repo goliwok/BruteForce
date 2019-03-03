@@ -1,6 +1,7 @@
 #include "bruteForce.hpp"
 #include "zipCracker.hpp"
 #include "arguments.hpp"
+#include "Lib/argparse.hpp"
 
 void    printHelp()
 {
@@ -11,18 +12,24 @@ void    printHelp()
     exit (1);
 }
 
-int     main (int ac, char **av)
+int     main (int ac, const char **av)
 {
+    ArgumentParser parser;
+
+    parser.addArgument("-l", "--letters");
+    parser.addArgument("-s", "--symbols");
+    parser.addArgument("-d", "--digits");
+    parser.addArgument("-h", "--hash", 1);
+    parser.addArgument("-z", "--zip");
+    parser.addFinalArgument("Input");
+
+    parser.parse(ac, av);
+
     int returnValue = 0;
-    if (ac < 2)
-        printHelp();
-    std::string key = std::string(av[1]);
-    Arguments *options = new Arguments(ac, av);
-    options->setHash(false);
-    if (ac > 2 || key == "-zip") {
-        options->parseArguments(key);    
-    }
-    if (options->isZip()){
+    std::string key = parser.retrieve<std::string>("Input");
+    Arguments *options = new Arguments(parser);
+    options->parseArguments(key);
+    if (parser.exists("zip")){
         zipCracker *cracker = new zipCracker(av[2]);
         cracker->isValid();
         exit(0);

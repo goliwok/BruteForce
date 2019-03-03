@@ -5,11 +5,12 @@
 #include        <vector>
 #include        <algorithm>
 #include        <functional>
+#include "Lib/argparse.hpp"
 
 class           Arguments
 {
     public:
-        Arguments(int, char **);
+        Arguments(/*int, const char ***/ArgumentParser &parser);
         ~Arguments();
 
         void        parseArguments(std::string key);
@@ -17,17 +18,13 @@ class           Arguments
         std::vector<std::pair<int, int>> &getToIterate();
         void        setHash(bool);
         bool        getHash();
-        bool        isZip() {return !zipFile.empty();};
 
     private:
-        std::vector<std::string>            opts;
-        int                                 nbArgs;
+        ArgumentParser parser;
         std::vector<std::pair<int, int>>    toIterate;
         std::string                         hashType;
         bool                                isHash;
-        std::string                         zipFile;
-
-        std::function<int()> hashFunction;
+        std::function<int()>                hashFunction;
 
         void        manageArgs();
         void        manageArgsHash();
