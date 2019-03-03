@@ -50,7 +50,7 @@ namespace   zipReader {
 			dest->strongEncryption = true;
 
 		std::cout << "@@@@@@ CENTRAL DIRECTORY @@@@@@" << std::endl;
-		std::cout << "starts at position: " << offset << std::endl;
+		std::cout << "starts at position: "<< std::hex  << offset << std::endl;
 		std::cout << "header signature: " << reinterpret_cast<unsigned int*>(dest->headerSignature)<<std::endl;
 		std::cout << "version made by: " << dest->versionMadeBy <<std::endl;
 		std::cout << "version needed to extract: " << dest->versionNeededToExtract <<std::endl;
@@ -73,5 +73,33 @@ namespace   zipReader {
 			std::cout << "fileComment: " << dest->fileComment <<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
 		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;
+	}
+
+	void	readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file, const size_t offset) {
+		file.seekg(offset, std::ios::beg);
+		file.read(reinterpret_cast<char *>(&dest->headerSignature),		4);
+		file.read(reinterpret_cast<char *>(&dest->numberDisk),			2);
+		file.read(reinterpret_cast<char *>(&dest->startDisk),			2);
+		file.read(reinterpret_cast<char *>(&dest->startOffset),			2);
+		file.read(reinterpret_cast<char *>(&dest->numberOfEntries),		2);
+		file.read(reinterpret_cast<char *>(&dest->centralDirectorySize),	4);
+		file.read(reinterpret_cast<char *>(&dest->centralDirectoryOffset),	4);
+		file.read(reinterpret_cast<char *>(&dest->commentLength),			4);
+		if (dest->commentLength > 0) {
+			dest->comment = new char[dest->commentLength + 1];
+			file.read(dest->comment, dest->commentLength);
+			dest->comment[dest->commentLength] = '\0';
+		}
+		std::cout << "@@@@@@ END OF CENTRAL DIRECTORY @@@@@@" << std::endl;
+		std::cout << "header signature: " <<  reinterpret_cast<unsigned int*>(dest->headerSignature) << std::endl;
+		std::cout << "disk number: " <<  dest->numberDisk << std::endl;
+		std::cout << "start disk: " <<  dest->startDisk << std::endl;
+		std::cout << "start disk offset: " <<  dest->startOffset << std::endl;
+		std::cout << "number of entries: " <<  dest->numberOfEntries << std::endl;
+		std::cout << "central dir size: " <<  dest->centralDirectorySize << std::endl;
+		std::cout << "central dir offset: " <<  dest->centralDirectoryOffset << std::endl;
+		if (dest->commentLength > 0)
+			std::cout << "comment: " <<  dest->comment << std::endl;
+
 	}
 }

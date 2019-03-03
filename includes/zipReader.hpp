@@ -38,7 +38,15 @@ struct centralDirectory {
 };
 
 struct endOfCentralDirectory {
-
+    uint32_t headerSignature;
+    uint16_t numberDisk;
+    uint16_t startOffset;
+    uint16_t startDisk;
+    uint16_t numberOfEntries;
+    uint32_t centralDirectorySize;
+    uint32_t centralDirectoryOffset;
+    uint32_t commentLength;
+    char    *comment;
 };
 
 struct localFileHeader {
@@ -47,6 +55,7 @@ struct localFileHeader {
 
 namespace   zipReader {
     void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file, const size_t offset);
+    void    readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file, const size_t offset);
 }
 
 #endif      /*_ZIPREADER_HPP_*/

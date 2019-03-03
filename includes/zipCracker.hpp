@@ -31,6 +31,7 @@ class           zipCracker
     	size_t				_start, _end;
 
     	centralDirectory	_cd;
+    	endOfCentralDirectory _eocd;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/

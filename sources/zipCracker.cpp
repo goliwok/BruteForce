@@ -13,7 +13,8 @@ zipCracker::zipCracker(const std::string& filename) :
 	_file(filename.c_str(), std::ios::in | std::ios::binary),
 	_start(0),
 	_end(0),
-	_cd({}) 
+	_cd({}),
+	_eocd({})
 {
 	std::cout << "new zipcracker with file:"<< filename<<std::endl;	
 }
@@ -59,6 +60,7 @@ bool		zipCracker::_getCentralDirectory(void) {
 
 void		zipCracker::_initStructures(void) {
 	zipReader::readCentralDirectory(&_cd, _file, _start);
+	zipReader::readEndOfCentralDirectory(&_eocd, _file, _end);
 }
 
 bool		zipCracker::isValid(void) {
