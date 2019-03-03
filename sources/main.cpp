@@ -23,7 +23,8 @@ int     main (int ac, char **av)
         options->parseArguments(key);    
     }
     if (options->isZip()){
-        zipCracker *cracker = new zipCracker;
+        zipCracker *cracker = new zipCracker(av[2]);
+        cracker->isValid();
         exit(0);
     }
     BruteForce bf(options, key);
