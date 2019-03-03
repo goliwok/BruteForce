@@ -1,11 +1,18 @@
 Just a simple bruteforce algorithm for fun :) 
 
-1) First download clang if you don't have it.
+1) First download dependencies clang or g++, cmake and libssl.
 
-2) export CC/CXX with clang path for cmake
+    on ubuntu/debian: sudo apt-get install cmake g++ clang-7 lldb-7 lld-7 libssl-dev 
 
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
+2) export CC/CXX for cmake
+
+    export CC=/usr/bin/clang
+    export CXX=/usr/bin/clang++
+
+    or  
+
+    export CC=/usr/bin/gcc
+    export CXX=/usr/bin/g++
 
 2) run cmake 
 

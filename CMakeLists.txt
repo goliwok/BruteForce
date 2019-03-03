@@ -12,6 +12,7 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
 
 find_package(OpenSSL)
 set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address") #-Wshadow
+target_link_libraries(Bf OpenSSL::SSL)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("use clang")
