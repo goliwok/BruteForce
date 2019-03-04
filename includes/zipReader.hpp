@@ -11,7 +11,7 @@
 
 #include		<iostream>
 #include        <fstream>
-
+#include        <vector>
 
 struct endOfCentralDirectory {
     uint32_t headerSignature;
@@ -21,8 +21,13 @@ struct endOfCentralDirectory {
     uint16_t numberOfEntries;
     uint32_t centralDirectorySize;
     uint32_t centralDirectoryOffset;
-    uint32_t commentLength;
+    uint16_t commentLength;
     char    *comment;
+    
+    ~endOfCentralDirectory() {
+        if (commentLength > 0)
+            delete[] comment;
+    }
 };
 
 struct centralDirectory {
@@ -47,7 +52,16 @@ struct centralDirectory {
     char    *extraField;
     char    *fileComment;
     bool    isEncrypted;
-    bool strongEncryption;
+    bool    strongEncryption;
+
+    ~centralDirectory() {
+        if (fileNameLength >  0)
+            delete[] filename;
+        if (extraFieldLength > 0)
+            delete[] extraField;
+        if (fileCommentLength > 0)
+            delete[] fileComment;
+    }
 };
 
 struct localFileHeader {

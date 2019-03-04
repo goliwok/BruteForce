@@ -31,9 +31,9 @@ class           zipCracker
     	std::ifstream		_file;
     	size_t				_eocd_offset;
 
-    	std::vector<centralDirectory>		_cd;
     	endOfCentralDirectory 				_eocd;
-    	std::vector<localFileHeader>		_lfh;
+    	std::vector<centralDirectory *>		_cd;
+    	std::vector<localFileHeader *>		_lfh;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/

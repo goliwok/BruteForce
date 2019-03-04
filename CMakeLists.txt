@@ -15,7 +15,7 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
  	            	${CMAKE_CURRENT_LIST_DIR}/includes/zipReader.hpp)
 
 find_package(OpenSSL)
-set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address") #-Wshadow
+set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address  -std=c++11") #-Wshadow
 target_link_libraries(Bf OpenSSL::SSL)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")

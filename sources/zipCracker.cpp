@@ -18,7 +18,10 @@ zipCracker::zipCracker(const std::string& filename) :
 	std::cout << "new zipcracker with file:"<< filename<<std::endl;	
 }
 
-zipCracker::~zipCracker() {}
+zipCracker::~zipCracker() {
+	for (int i = 0; i < _cd.size(); i++)
+		delete _cd[i];
+}
 
 bool		zipCracker::_checkHeader(void) {	
 	uint32_t	*header_signature = new uint32_t;
@@ -31,32 +34,39 @@ bool		zipCracker::_checkHeader(void) {
 	return found;
 }
 
-bool			zipCracker::_getEndOfCentralDirectoryOffset(void) {
+bool		zipCracker::_getEndOfCentralDirectoryOffset(void) {
 	uint32_t	*signature = new uint32_t;
-	uint32_t	eocd_signature = 0x06054b50;
-	bool		found;
+	bool		found_end = false, found = false;;
+	uint32_t	start_signature = 0x02014b50;
+	uint32_t	end_signature = 0x06054b50;
 	size_t	i;
 
 	_file.seekg(-4, std::ios::end);
 	i = _file.tellg();
-	for (;; --i) {
+	for (; i > 3; --i) {
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
-		if (*signature == eocd_signature) {
-				found = true;
+		if (!found_end && *signature == end_signature) {
 				_eocd_offset = i;
+				found_end = true;
+				i -= 2;
+		} else if (*signature == start_signature) {
+				found = true;
 				break;
 		}
 	}
+	_file.seekg(0, std::ios::end);
+	std::cout << "file size after getend:" << _file.tellg() << std::endl;
 	delete signature;
 	return found;
 }
-
 void		zipCracker::_initStructures(void) {
 	zipReader::readEndOfCentralDirectory(&_eocd, _file, _eocd_offset);
-	centralDirectory toto;
-	zipReader::readCentralDirectory(&toto, _file, _eocd.centralDirectoryOffset);
-	//std::cout << _eocd.numberOfEntries<< ";at " <<std::hex << _eocd.centralDirectoryOffset << std::endl;
+	std::vector<centralDirectory *> v;
+
+	centralDirectory *toto = new centralDirectory;
+	zipReader::readCentralDirectory(toto, _file, _eocd.centralDirectoryOffset);
+	_cd.push_back(toto);
 }
 
 bool		zipCracker::isValid(void) {
@@ -74,6 +84,7 @@ bool		zipCracker::isValid(void) {
 		std::cerr << "The file size is " << size << " bytes, but the minimum size is 22 bytes." << std::endl;
 		return false;
 	}
+
 	if (!_getEndOfCentralDirectoryOffset()) {
 		std::cerr << "Unable to find Central Directory." << std::endl;
 		return false;

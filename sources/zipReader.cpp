@@ -11,7 +11,6 @@
 namespace   zipReader {
 	void	readCentralDirectory(struct centralDirectory* dest, std::ifstream& file, const size_t offset) {
 		file.seekg(offset, std::ios::beg);
-		std::cout << "@@@@@@@@@@@@@@@@@"<<file.tellg() << std::endl;
 		file.read(reinterpret_cast<char *>(&dest->headerSignature),			4);
 		file.read(reinterpret_cast<char *>(&dest->versionMadeBy),			2);
 		file.read(reinterpret_cast<char *>(&dest->versionNeededToExtract),	2);
@@ -35,9 +34,8 @@ namespace   zipReader {
 			dest->filename[dest->fileNameLength] = '\0';
 		}
 		if (dest->extraFieldLength > 0) {
-			dest->extraField = new char[dest->extraFieldLength + 1];
+			dest->extraField = new char[dest->extraFieldLength];
 			file.read(dest->extraField, dest->extraFieldLength);
-			dest->extraField[dest->extraFieldLength] = '\0';
 		}
 		if (dest->fileCommentLength > 0) {
 			dest->fileComment = new char[dest->fileCommentLength + 1];
@@ -66,14 +64,17 @@ namespace   zipReader {
 		std::cout << "internalFileAttributes: " << dest->internalFileAttributes <<std::endl;
 		std::cout << "externalFileAttributes: " << reinterpret_cast<unsigned int*>(dest->externalFileAttributes) <<std::endl;
 		std::cout << "relativeOffset: " << reinterpret_cast<unsigned int*>(dest->relativeOffset) <<std::endl;
-		if (dest->fileNameLength > 0)
+		std::cout << "extraFieldLength: " << dest->extraFieldLength <<std::endl;
+		if (dest->fileNameLength > 0) {
 			std::cout << "fileName: " << dest->filename <<std::endl;
+		}
 		if (dest->extraFieldLength > 0)
 			std::cout << "extraField: " << dest->extraField <<std::endl;
-		if (dest->fileComment > 0)
+		if (dest->fileCommentLength > 0)
 			std::cout << "fileComment: " << dest->fileComment <<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
 		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;
+
 	}
 
 	void	readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file, const size_t offset) {
@@ -85,7 +86,7 @@ namespace   zipReader {
 		file.read(reinterpret_cast<char *>(&dest->numberOfEntries),		2);
 		file.read(reinterpret_cast<char *>(&dest->centralDirectorySize),	4);
 		file.read(reinterpret_cast<char *>(&dest->centralDirectoryOffset),	4);
-		file.read(reinterpret_cast<char *>(&dest->commentLength),			4);
+		file.read(reinterpret_cast<char *>(&dest->commentLength),			2);
 		if (dest->commentLength > 0) {
 			dest->comment = new char[dest->commentLength + 1];
 			file.read(dest->comment, dest->commentLength);
@@ -101,5 +102,6 @@ namespace   zipReader {
 		std::cout << "central dir offset: " <<  dest->centralDirectoryOffset << std::endl;
 		if (dest->commentLength > 0)
 			std::cout << "comment: " <<  dest->comment << std::endl;
+
 	}
 }
