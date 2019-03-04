@@ -1,25 +1,19 @@
 #include    "arguments.hpp"
 
-Arguments::Arguments(int ac, char **av)
+Arguments::Arguments(ArgumentParser *_parser)
 {
-    nbArgs = ac;
-    zipFile = "";
-    for (int i = 2 ; i != nbArgs ; i++)
-        opts.push_back(std::string(av[i]));
+    parser = _parser;
+    isHash = false;
+    key = _parser->retrieve<std::string>("Input");
     toIterate = { std::make_pair(65, 90), std::make_pair(97, 122), 
-                                                std::make_pair(33, 47), std::make_pair(58, 64), 
-                                                std::make_pair(91, 96), std::make_pair(123, 126),
-                                                std::make_pair(48, 57)};
+                std::make_pair(33, 47), std::make_pair(58, 64), 
+                std::make_pair(91, 96), std::make_pair(123, 126),
+                std::make_pair(48, 57)};
 }
 
 Arguments::~Arguments() 
 {
 
-}
-
-bool Arguments::in_array(const std::string &value, const std::vector<std::string> &array)
-{
-    return std::find(array.begin(), array.end(), value) != array.end();
 }
 
 int    Arguments::checkInput(std::string input)
@@ -44,30 +38,24 @@ int    Arguments::checkInput(std::string input)
  */
 void    Arguments::manageArgs()
 {
-    if (!in_array("-d", opts))
+    if (!parser->exists("digits"))//(!in_array("-d", opts))
         toIterate.erase(toIterate.begin()+6, toIterate.begin()+7);
-    if (!in_array("-s", opts))
+    if (!parser->exists("symbols"))
         toIterate.erase(toIterate.begin()+2, toIterate.begin()+6);
-    if (!in_array("-l", opts))
+    if (!parser->exists("letters"))
         toIterate.erase(toIterate.begin(), toIterate.begin()+2);
 }
 
-void    Arguments::parseArguments(std::string key)
+void    Arguments::parseArguments()
 {
-    if (in_array("-hash", opts))
+    if (!parser->retrieve<std::string>("hash").empty())
     {
-        hashType = opts[1];
+        hashType = parser->retrieve<std::string>("hash");
         isHash = true;
         return;
-    } else if (key == "-zip") {
-            if (opts.empty() || opts[0].empty()){
-                std::cout << "Give me a filename !!!!!!!" << std::endl;
-                exit(1);
-            } else
-                zipFile = opts[0];
-        return;
     }
-    manageArgs();
+    if (parser->exists("digits") || parser->exists("letters") || parser->exists("symbols"))
+        manageArgs();
     if (checkInput(key) == 1)
     {
         std::cout << "Bad input, you have to set the good option according to your input " << 
@@ -82,11 +70,6 @@ std::string     &Arguments::getHashType()
     return hashType;
 }
 
-void     Arguments::setHash(bool isHash)
-{
-    this->isHash = isHash;
-}
-
 bool     Arguments::getHash()
 {
     return this->isHash;
@@ -95,4 +78,9 @@ bool     Arguments::getHash()
 std::vector<std::pair<int, int>> &Arguments::getToIterate()
 {
     return toIterate;
+}
+
+std::string &Arguments::getKey()
+{
+    return this->key;
 }

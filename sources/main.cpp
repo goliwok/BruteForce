@@ -1,46 +1,47 @@
 #include "bruteForce.hpp"
 #include "zipCracker.hpp"
 #include "arguments.hpp"
+#include "Lib/argparse.hpp"
 
-void    printHelp()
+ArgumentParser *parse(int ac, const char **av)
 {
-    std::cout << 
-        "USAGE: ./Bf <key> [-l] [-s] [-d]\n \n -l:\tletters\n -s:\tsymbols\n -d:\tdigits \n\n"
-        << "OR ./Bf <hash> -hash <hashType>: \n [sha1] \n [md5]"
-        << std::endl;
-    exit (1);
+    ArgumentParser *parser = new ArgumentParser;
+
+    parser->addArgument("-l", "--letters");
+    parser->addArgument("-s", "--symbols");
+    parser->addArgument("-d", "--digits");
+    parser->addArgument("-h", "--hash", 1);
+    parser->addArgument("-z", "--zip");
+    parser->addFinalArgument("Input");
+
+    if (parser->parse(ac, av) == -1)
+    {
+        delete parser;
+        exit(-1);
+    }
+    return parser;
 }
 
-int     main (int ac, char **av)
+int     main (int ac, const char **av)
 {
     int returnValue = 0;
-    if (ac < 2)
-        printHelp();
-    std::string key = std::string(av[1]);
-    Arguments *options = new Arguments(ac, av);
-    options->setHash(false);
-    if (ac > 2 || key == "-zip") {
-        options->parseArguments(key);    
-    }
-    if (options->isZip()){
-        zipCracker *cracker = new zipCracker(av[2]);
+    ArgumentParser *parser = parse(ac, av);
+    Arguments *options = new Arguments(parser);
+    options->parseArguments();
+    if (parser->exists("zip")) {
+        zipCracker *cracker = new zipCracker(options->getKey());
         cracker->isValid();
         exit(0);
     }
-    BruteForce bf(options, key);
-    std::string playground(key.length(), 'a');
-    if (options->getHash())
-        playground = "a";
+    BruteForce bf(options);
     clock_t start = clock();
     if (!options->getHash())
-        returnValue = bf.word(playground, key.length(), 0, false);
+        returnValue = bf.word(options->getKey().length(), 0, false);
     else
-        returnValue = bf.initHash(playground, 0, false);
+        returnValue = bf.initHash(0, false);
     if (returnValue == 0)
-    {
-        double time = (double) (stop - start) / CLOCKS_PER_SEC;
-        std::cout << "found it in " << time << " sec" << std::endl;
-    }
+        std::cout << "found it in " << (double) (stop - start) / CLOCKS_PER_SEC << " sec" << std::endl;
     delete options;
+    delete parser;
     return 0;
 }
