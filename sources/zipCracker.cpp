@@ -19,8 +19,8 @@ zipCracker::zipCracker(const std::string& filename) :
 }
 
 zipCracker::~zipCracker() {
-	for (int i = 0; i < _cd.size(); i++)
-		delete _cd[i];
+	for (auto i: _cd)
+		delete i;
 }
 
 bool		zipCracker::_checkHeader(void) {	
@@ -37,36 +37,41 @@ bool		zipCracker::_checkHeader(void) {
 bool		zipCracker::_getEndOfCentralDirectoryOffset(void) {
 	uint32_t	*signature = new uint32_t;
 	bool		found_end = false, found = false;;
-	uint32_t	start_signature = 0x02014b50;
-	uint32_t	end_signature = 0x06054b50;
+	uint32_t	eocd_signature = 0x06054b50;
 	size_t	i;
 
 	_file.seekg(-4, std::ios::end);
 	i = _file.tellg();
-	for (; i > 3; --i) {
+	for (; i > 3;) {
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
-		if (!found_end && *signature == end_signature) {
-				_eocd_offset = i;
-				found_end = true;
-				i -= 2;
-		} else if (*signature == start_signature) {
-				found = true;
-				break;
+		if (!found_end && *signature == eocd_signature) {
+			_eocd_offset = i;
+			found = true;
+			break;
 		}
+		i -= 3;
 	}
-	_file.seekg(0, std::ios::end);
-	std::cout << "file size after getend:" << _file.tellg() << std::endl;
 	delete signature;
 	return found;
 }
 void		zipCracker::_initStructures(void) {
-	zipReader::readEndOfCentralDirectory(&_eocd, _file, _eocd_offset);
-	std::vector<centralDirectory *> v;
-
-	centralDirectory *toto = new centralDirectory;
-	zipReader::readCentralDirectory(toto, _file, _eocd.centralDirectoryOffset);
-	_cd.push_back(toto);
+	_file.seekg(_eocd_offset, std::ios::beg);
+	zipReader::readEndOfCentralDirectory(&_eocd, _file);
+	centralDirectory *cd;
+	_file.seekg(_eocd.centralDirectoryOffset, std::ios::beg);
+	for (int i = 0; i <= _eocd.numberOfEntries - 1; i++) {
+		cd = new centralDirectory;
+		zipReader::readCentralDirectory(cd, _file);
+		_cd.push_back(cd);
+	}
+	_file.seekg(0, std::ios::beg);
+	localFileHeader *lfh;
+	for (int i = 0; i <= _eocd.numberOfEntries - 1; i++) {
+		lfh = new localFileHeader;
+		zipReader::readLocalFileHeader(lfh, _file);	
+		_lfh.push_back(lfh);
+	}
 }
 
 bool		zipCracker::isValid(void) {

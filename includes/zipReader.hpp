@@ -65,12 +65,27 @@ struct centralDirectory {
 };
 
 struct localFileHeader {
+    uint32_t headerSignature;
+    uint16_t versionNeededToExtract;
+    uint16_t bitFlag;
+    uint16_t compressionMethod;
+    uint16_t lastModFileTime;
+    uint16_t lastModFileDate;
+    uint32_t crc32;
+    uint32_t compressedSize;
+    uint32_t uncompressedSize;
+    uint16_t fileNameLength;
+    uint16_t extraFieldLength;
 
+    char    *filename;
+    char    *extraField;
+    char    *data;
 };
 
 namespace   zipReader {
-    void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file, const size_t offset);
-    void    readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file, const size_t offset);
+    void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file);
+    void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file);
+    void    readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file);
 }
 
 #endif      /*_ZIPREADER_HPP_*/
