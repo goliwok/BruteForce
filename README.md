@@ -24,7 +24,10 @@ TODO:
 
 - [ ] rainbow tables
 - [ ] multithreads
-- [ ] CUDA
-- [ ] improve options
+- [ ] Graphic card (openCL/CUDA)
+- [ ] improve arguments
 - [ ] clean and improve understanding of the code
 - [ ] compile with clang and g++, compare perf
+- [ ] Zip
+- [ ] sha3
+- [ ] HMAC
