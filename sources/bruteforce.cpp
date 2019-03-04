@@ -4,10 +4,10 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 
-BruteForce::BruteForce(Arguments *_options, std::string _key)
+BruteForce::BruteForce(Arguments *_options)
 {
     options = _options;
-    key = _key;
+    key = _options->getKey();
     std::cout << "max depth: " << key.length() << std::endl;
 }
 

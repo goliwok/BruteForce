@@ -1,9 +1,10 @@
 #include    "arguments.hpp"
 
-Arguments::Arguments(ArgumentParser &_parser)
+Arguments::Arguments(ArgumentParser *_parser)
 {
     parser = _parser;
     isHash = false;
+    key = _parser->retrieve<std::string>("Input");
     toIterate = { std::make_pair(65, 90), std::make_pair(97, 122), 
                 std::make_pair(33, 47), std::make_pair(58, 64), 
                 std::make_pair(91, 96), std::make_pair(123, 126),
@@ -37,23 +38,23 @@ int    Arguments::checkInput(std::string input)
  */
 void    Arguments::manageArgs()
 {
-    if (!parser.exists("digits"))//(!in_array("-d", opts))
+    if (!parser->exists("digits"))//(!in_array("-d", opts))
         toIterate.erase(toIterate.begin()+6, toIterate.begin()+7);
-    if (!parser.exists("symbols"))
+    if (!parser->exists("symbols"))
         toIterate.erase(toIterate.begin()+2, toIterate.begin()+6);
-    if (!parser.exists("letters"))
+    if (!parser->exists("letters"))
         toIterate.erase(toIterate.begin(), toIterate.begin()+2);
 }
 
-void    Arguments::parseArguments(std::string key)
+void    Arguments::parseArguments()
 {
-    if (!parser.retrieve<std::string>("hash").empty())
+    if (!parser->retrieve<std::string>("hash").empty())
     {
-        hashType = parser.retrieve<std::string>("hash");
+        hashType = parser->retrieve<std::string>("hash");
         isHash = true;
         return;
     }
-    if (parser.exists("digits") || parser.exists("letters") || parser.exists("symbols"))
+    if (parser->exists("digits") || parser->exists("letters") || parser->exists("symbols"))
         manageArgs();
     if (checkInput(key) == 1)
     {
@@ -77,4 +78,9 @@ bool     Arguments::getHash()
 std::vector<std::pair<int, int>> &Arguments::getToIterate()
 {
     return toIterate;
+}
+
+std::string &Arguments::getKey()
+{
+    return this->key;
 }

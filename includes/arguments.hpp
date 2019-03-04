@@ -10,17 +10,19 @@
 class           Arguments
 {
     public:
-        Arguments(ArgumentParser &parser);
+        Arguments(ArgumentParser *parser);
         ~Arguments();
 
-        void        parseArguments(std::string key);
+        void        parseArguments();
         std::string &getHashType();
         std::vector<std::pair<int, int>> &getToIterate();
         void        setHash(bool);
         bool        getHash();
+        std::string &getKey();
 
     private:
-        ArgumentParser parser;
+        ArgumentParser *parser;
+        std::string     key;
         std::vector<std::pair<int, int>>    toIterate;
         std::string                         hashType;
         bool                                isHash;

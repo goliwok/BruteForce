@@ -197,10 +197,11 @@ private:
     // --------------------------------------------------------------------------
     // Error handling
     // --------------------------------------------------------------------------
-    void argumentError(const std::string& msg, bool show_usage = false) {
+    void argumentError(const std::string& msg, bool show_usage = false, bool quit = false) {
         if (use_exceptions_) throw std::invalid_argument(msg);
         std::cerr << "ArgumentParser error: " << msg << std::endl;
         if (show_usage) std::cerr << usage() << std::endl;
+        if (quit) return;
         exit(-5);
     }
 
@@ -258,9 +259,9 @@ public:
     // --------------------------------------------------------------------------
     // Parse
     // --------------------------------------------------------------------------
-    void parse(size_t argc, const char** argv) { parse(StringVector(argv, argv + argc)); }
+    int parse(size_t argc, const char** argv) { return parse(StringVector(argv, argv + argc)); }
 
-    void parse(const StringVector& argv) {
+    int parse(const StringVector& argv) {
         // check if the app is named
         if (app_name_.empty() && ignore_first_ && !argv.empty()) app_name_ = argv[0];
 
@@ -343,7 +344,11 @@ public:
 
         // check that all of the required arguments have been encountered
         if (nrequired > 0 || nfinal > 0)
-            argumentError(String("too few required arguments passed to ").append(app_name_), true);
+        {
+            argumentError(String("too few required arguments passed to ").append(app_name_), true, true); // HERE*/ 
+            return -1;
+        }
+        return 0;
     }
 
     // --------------------------------------------------------------------------

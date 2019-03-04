@@ -12,7 +12,7 @@ static clock_t stop;
 class   BruteForce
 {
     public:
-        BruteForce(Arguments *_options, std::string _key);
+        BruteForce(Arguments *_options);
         ~BruteForce();
 
         int     word(std::string&, const int, int, bool);
