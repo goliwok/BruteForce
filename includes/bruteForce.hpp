@@ -15,12 +15,13 @@ class   BruteForce
         BruteForce(Arguments *_options);
         ~BruteForce();
 
-        int     word(std::string&, const int, int, bool);
-        int     hash(std::string &, int, bool);
-        int     initHash(std::string &, int, bool);
+        int     word(const int, int, bool);
+        int     hash(int, bool);
+        int     initHash(int, bool);
 
     private:
         std::string     key;
+        std::string     playground;
         Arguments       *options;
         std::string     &generateSha1(std::string &, std::string &);
         std::string     &generateMd5(std::string &, std::string &);

@@ -34,19 +34,13 @@ int     main (int ac, const char **av)
         exit(0);
     }
     BruteForce bf(options);
-    std::string playground(options->getKey().length(), 'a');
-    if (options->getHash())
-        playground = "a";
     clock_t start = clock();
     if (!options->getHash())
-        returnValue = bf.word(playground, options->getKey().length(), 0, false);
+        returnValue = bf.word(options->getKey().length(), 0, false);
     else
-        returnValue = bf.initHash(playground, 0, false);
+        returnValue = bf.initHash(0, false);
     if (returnValue == 0)
-    {
-        double time = (double) (stop - start) / CLOCKS_PER_SEC;
-        std::cout << "found it in " << time << " sec" << std::endl;
-    }
+        std::cout << "found it in " << (double) (stop - start) / CLOCKS_PER_SEC << " sec" << std::endl;
     delete options;
     delete parser;
     return 0;

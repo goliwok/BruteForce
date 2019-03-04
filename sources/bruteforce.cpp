@@ -8,6 +8,10 @@ BruteForce::BruteForce(Arguments *_options)
 {
     options = _options;
     key = _options->getKey();
+    playground = std::string(options->getKey().length(), 'a');
+    if (options->getHash())
+        playground = "a";
+    std::string playground(options->getKey().length(), 'a');
     std::cout << "max depth: " << key.length() << std::endl;
 }
 
@@ -48,17 +52,17 @@ std::string     &BruteForce::generateSha1(std::string & input, std::string &hash
     return hashGen;
 }    
 
-int             BruteForce::initHash(std::string &playground, int currentDepth, bool op)
+int             BruteForce::initHash(int currentDepth, bool op)
 {
     std::transform(key.begin(), key.end(), key.begin(), [](unsigned char c){ return std::tolower(c); });
     if (options->getHashType() == "sha1")
         hashfunc = std::bind(&BruteForce::generateSha1, this, std::placeholders::_1, std::placeholders::_2);
     else
         hashfunc = std::bind(&BruteForce::generateMd5, this, std::placeholders::_1, std::placeholders::_2);      
-    return  hash(playground, currentDepth, op);
+    return  hash(currentDepth, op);
 }
 
-int             BruteForce::hash(std::string &playground, int currentDepth, bool op)
+int             BruteForce::hash(int currentDepth, bool op)
 {
     for (std::vector<std::pair<int, int>>::iterator it = options->getToIterate().begin(); it != options->getToIterate().end(); ++it)
     {
@@ -73,19 +77,19 @@ int             BruteForce::hash(std::string &playground, int currentDepth, bool
                 return (0);
             }
             if (currentDepth != 0)
-                if (hash(playground, currentDepth - 1, true) == 0)
+                if (hash(currentDepth - 1, true) == 0)
                     return (0);
         }
     }
     if (op == true)
         return -1;
     playground = std::string(playground.length()+1, 'a');
-    if (hash(playground, currentDepth + 1, false) == 0)
+    if (hash(currentDepth + 1, false) == 0)
         return 0;
     return -1;
 }
 
-int     BruteForce::word(std::string &playground, const int maxDepth, int currentDepth, bool op)
+int     BruteForce::word(const int maxDepth, int currentDepth, bool op)
 {
     for (std::vector<std::pair<int, int>>::iterator it = options->getToIterate().begin(); it != options->getToIterate().end(); ++it)
     {
@@ -99,7 +103,7 @@ int     BruteForce::word(std::string &playground, const int maxDepth, int curren
                 return (0);
             }
             if (currentDepth != 0)
-                if (word(playground, maxDepth, currentDepth - 1, true) == 0)
+                if (word(maxDepth, currentDepth - 1, true) == 0)
                     return (0);
         }
     }
@@ -108,7 +112,7 @@ int     BruteForce::word(std::string &playground, const int maxDepth, int curren
     else if (currentDepth < maxDepth - 1)
     {   
         playground = std::string(maxDepth, 'a');
-        if (word(playground, maxDepth, currentDepth + 1, false) == 0)
+        if (word(maxDepth, currentDepth + 1, false) == 0)
             return 0;
     }
     return -1;    
