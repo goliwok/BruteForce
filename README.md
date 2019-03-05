@@ -1,8 +1,14 @@
 Just a simple bruteforce algorithm for fun :) 
 
-1) First download dependencies clang or g++, cmake and libssl.
+1) First download dependencies clang or g++, cmake, Opencl and libssl.
 
     on ubuntu/debian: sudo apt-get install cmake g++ clang-7 lldb-7 lld-7 libssl-dev 
+
+    #############################################
+    
+    FOR OPENCL, IN DON'T KNOW HOW TO INSTALL IT ON UBUNTU/DEBIAN SYSTEM, GOOGLE IS YOUR FRIEND :)
+    
+    #############################################
 
 2) export CC/CXX for cmake
 
@@ -16,9 +22,11 @@ Just a simple bruteforce algorithm for fun :)
 
 2) run cmake 
 
-cmake .
+    cmake .
 
 3) run make
+
+    make
 
 TODO:
 
