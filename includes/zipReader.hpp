@@ -12,7 +12,41 @@
 #include		<iostream>
 #include        <fstream>
 #include        <vector>
+#include        <map>
+enum CompressionMethod {
+    STORED      = 0,
+    SHRUNK      = 1,
+    IMPLODED    = 6,
+    DEFLATED    = 8,
+    DEFLATE64   = 9,
+    PKWARE      = 10,
+    BZIP2       = 12,
+    LZMA        = 13,
+    JPEG        = 96,
+    WAVPACK     = 97,
+    PPMD        = 98,
+    AEX         = 99
+};
+inline std::ostream& operator<<(std::ostream& out, const CompressionMethod value){
+    static std::map<CompressionMethod, std::string> strings;
+    if (strings.size() == 0){
+#define INSERT_ELEMENT(p) strings[p] = #p
+        INSERT_ELEMENT(STORED);
+        INSERT_ELEMENT(SHRUNK);     
+        INSERT_ELEMENT(DEFLATED);
+        INSERT_ELEMENT(DEFLATE64);
+        INSERT_ELEMENT(PKWARE);
+        INSERT_ELEMENT(BZIP2);
+        INSERT_ELEMENT(LZMA);
+        INSERT_ELEMENT(JPEG);
+        INSERT_ELEMENT(WAVPACK);
+        INSERT_ELEMENT(PPMD);
+        INSERT_ELEMENT(AEX);         
+#undef INSERT_ELEMENT
+    }   
 
+    return out << strings[value];
+}
 struct endOfCentralDirectory {
     uint32_t headerSignature;
     uint16_t numberDisk;
@@ -22,6 +56,7 @@ struct endOfCentralDirectory {
     uint32_t centralDirectorySize;
     uint32_t centralDirectoryOffset;
     uint16_t commentLength;
+
     char    *comment;
     
     ~endOfCentralDirectory() {
@@ -48,9 +83,11 @@ struct centralDirectory {
     uint16_t internalFileAttributes;
     uint32_t externalFileAttributes;
     uint32_t relativeOffset;
+
     char    *filename;
     char    *extraField;
     char    *fileComment;
+
     bool    isEncrypted;
     bool    strongEncryption;
 
@@ -80,6 +117,14 @@ struct localFileHeader {
     char    *filename;
     char    *extraField;
     char    *data;
+
+    bool    isEncrypted;
+    bool    strongEncryption;
+
+    localFileHeader() {
+        isEncrypted = false;
+        strongEncryption = false;
+    }
 };
 
 namespace   zipReader {

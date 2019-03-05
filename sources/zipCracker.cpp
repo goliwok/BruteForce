@@ -20,7 +20,9 @@ zipCracker::zipCracker(const std::string& filename) :
 
 zipCracker::~zipCracker() {
 	for (auto i: _cd)
-		delete i; 
+		delete i;
+	for (auto i: _lfh)
+		delete i;
 }
 
 bool		zipCracker::_checkHeader(void) {	
@@ -58,19 +60,23 @@ bool		zipCracker::_getEndOfCentralDirectoryOffset(void) {
 
 void				zipCracker::_aggressiveFindLFH(void) {
 	uint32_t		lfh_signature = 0x04034B50;
+	uint32_t		eocd_signature = 0x06054b50;
+	uint32_t		cd_signature = 0x02014B50;
 	uint32_t		*signature = new uint32_t;
 	localFileHeader *lfh;
 	_file.seekg(0, std::ios::beg);
 
-	for (size_t i = _file.tellg(); i < _eocd_offset; i++){
+	for (size_t i = _file.tellg(); i < _eocd_offset ; i++){
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
 		if (*signature == lfh_signature){
 			lfh = new localFileHeader;
 			zipReader::readLocalFileHeader(lfh, _file);
 			_lfh.push_back(lfh);
-		}
+		} else if (*signature == cd_signature || *signature == eocd_signature)
+			break;
 	}
+	delete signature;
 }
 
 void		zipCracker::_initStructures(void) {

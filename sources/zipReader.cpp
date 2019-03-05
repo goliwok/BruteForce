@@ -56,7 +56,7 @@ namespace   zipReader {
 		std::cout << "version made by: " << dest->versionMadeBy <<std::endl;
 		std::cout << "version needed to extract: " << dest->versionNeededToExtract <<std::endl;
 		std::cout << "bit flag: " << dest->bitFlag <<std::endl;
-		std::cout << "compression method: " << dest->compressionMethod <<std::endl;
+		std::cout << "compression method: " << dest->compressionMethod << "->"<<(CompressionMethod)dest->compressionMethod <<std::endl;
 		std::cout << "lastModFileTime: " << dest->lastModFileTime <<std::endl;
 		std::cout << "lastModFileDate: " << dest->lastModFileDate <<std::endl;
 		std::cout << "crc32: " << reinterpret_cast<unsigned int*>(dest->crc32) <<std::endl;
@@ -103,10 +103,10 @@ namespace   zipReader {
 		std::cout << "central dir offset: " <<  dest->centralDirectoryOffset << std::endl;
 		if (dest->commentLength > 0)
 			std::cout << "comment: " <<  dest->comment << std::endl;
-
 	}
+
 	void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file){
-		file.seekg(file.tellg() - 4, std::ios::beg);
+		file.seekg(-4, std::ios::cur);
 		size_t save = file.tellg();
 		file.read(reinterpret_cast<char *>(&dest->headerSignature),				4);
 		file.read(reinterpret_cast<char *>(&dest->versionNeededToExtract),		2);
@@ -119,6 +119,9 @@ namespace   zipReader {
 		file.read(reinterpret_cast<char *>(&dest->uncompressedSize),           	4);
 		file.read(reinterpret_cast<char *>(&dest->fileNameLength),            	2);
 		file.read(reinterpret_cast<char *>(&dest->extraFieldLength),          	2);
+		
+		std::cout << dest->compressionMethod << std::endl;
+
 		if (dest->fileNameLength > 0) {
 			dest->filename = new char[dest->fileNameLength + 1];
 			file.read(dest->filename, dest->fileNameLength);
@@ -129,12 +132,22 @@ namespace   zipReader {
 			file.read(dest->extraField, dest->extraFieldLength);
 			dest->extraField[dest->extraFieldLength] = '\0';
 		}
-		size_t data_offset = file.tellg();
-		if (dest->uncompressedSize > 0) {
-			dest->data = new char[dest->uncompressedSize + 1];
-			file.read(dest->data, dest->uncompressedSize);
-			dest->data[dest->uncompressedSize] = '\0';
+		size_t data_start_byte = file.tellg();
+		size_t data_size = 0;
+		if (dest->compressionMethod > STORED)
+			data_size = dest->compressedSize;
+		else
+			data_size = dest->uncompressedSize;
+		dest->data = new char[data_size + 1];
+		file.read(dest->data, data_size);
+		dest->data[data_size] = '\0';
+
+		if (dest->bitFlag & 1) {
+			dest->isEncrypted = true;
+			if (dest->bitFlag & (1 << 6))
+				dest->strongEncryption = true;
 		}
+
 		std::cout << "====================================" << std::endl;
 		std::cout << "====== L0CAL FILE HEADER ======" << std::endl;
 		std::cout << "====================================" << std::endl;
@@ -142,7 +155,7 @@ namespace   zipReader {
 		std::cout << "header signature: " << reinterpret_cast<unsigned int*>(dest->headerSignature)<<std::endl;
 		std::cout << "version needed to extract: " << dest->versionNeededToExtract <<std::endl;
 		std::cout << "bit flag: " << dest->bitFlag <<std::endl;
-		std::cout << "compression method: " << dest->compressionMethod <<std::endl;
+		std::cout << "compression method: " << dest->compressionMethod <<"->"<<(CompressionMethod)dest->compressionMethod <<std::endl;
 		std::cout << "lastModFileTime: " << dest->lastModFileTime <<std::endl;
 		std::cout << "lastModFileDate: " << dest->lastModFileDate <<std::endl;
 		std::cout << "crc32: " << reinterpret_cast<unsigned int*>(dest->crc32) <<std::endl;
@@ -156,5 +169,7 @@ namespace   zipReader {
 			std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
 		if (dest->uncompressedSize > 0) 
 			std::cout << "@@@@@data: " << dest->data <<" (length:"<< dest->uncompressedSize<<")"<<std::endl;
+		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
+		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;		
 	}
 }
