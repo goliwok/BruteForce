@@ -116,11 +116,37 @@ bool		zipCracker::isValid(void) {
 	}
 	std::cout << "Found Central directory at: 0x"<< std::hex <<_eocd_offset<< std::endl;
 	_initStructures();
+	if (_lfh.size() == 0){
+		std::cout << "no local file header found" << std::endl;
+		return false;
+	}
 	return true;
 }
 
-bool	zipCracker::crack(void) {
-	for (auto i: _lfh) {
-		std::cout << i->dataLength << std::endl;
+bool					zipCracker::crack(void) {
+	uint32_t			smallestSize = 0;
+	uint32_t			smallestLFH;
+
+	for (size_t i = 0; i < _lfh.size(); i++) {
+		if (smallestSize == 0 || _lfh[i]->dataLength <= smallestSize){
+			smallestLFH = i;
+			smallestSize = _lfh[i]->dataLength;
+		}
 	}
+	if (smallestSize == 0) {
+		std::cout << "The largest file is 0bytes....... nothing really interesting to crack !" << std::endl;
+		//return false;
+	}
+	char 				*encryptionHeader 	= new char[12];
+	char 				*buf               	= new char[_lfh[smallestLFH]->dataLength];
+	uint8_t 			*buffer				= new uint8_t[12];
+
+	_file.seekg(_lfh[smallestLFH]->dataStartOffset, std::ios::beg);
+	_file.read(encryptionHeader, 12);
+	_file.read(buf, _lfh[smallestLFH]->dataLength);
+	_file.close();
+
+	delete[] encryptionHeader;
+	delete[] buf;
+	delete[] buffer;
 }

@@ -101,6 +101,22 @@ struct centralDirectory {
     }
 };
 
+struct encryptionHeader {
+    uint32_t    key1;
+    uint32_t    key2;
+    uint32_t    key3;
+    encryptionHeader() { key1 = key2 = key3 = 0; }
+};
+
+struct dataDescriptor {
+    uint32_t headerSignature;
+    uint32_t crc32;
+    uint32_t compressedSize;
+    uint32_t uncompressedSize;
+
+    dataDescriptor(){ headerSignature = crc32 = compressedSize = uncompressedSize = 0; }
+};
+
 struct localFileHeader {
     uint32_t headerSignature;
     uint16_t versionNeededToExtract;
@@ -114,6 +130,7 @@ struct localFileHeader {
     uint16_t fileNameLength;
     uint16_t extraFieldLength;
     uint32_t dataLength;
+    uint32_t dataStartOffset;
     char    *filename;
     char    *extraField;
     char    *data;
@@ -121,16 +138,22 @@ struct localFileHeader {
     bool    isEncrypted;
     bool    strongEncryption;
 
+    dataDescriptor      *descriptor;
+    encryptionHeader    *eh;
+
     localFileHeader() {
-        isEncrypted = false;
-        strongEncryption = false;
+        descriptor = new dataDescriptor;
+        eh = new encryptionHeader;
+        isEncrypted = strongEncryption = false;
         dataLength = 0;
     }
 };
 
 namespace   zipReader {
-    void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file);
     void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file);
+    void    readEncryptionHeader(struct localFileHeader* dest, std::ifstream& file);
+    void    readDataDescriptor(struct localFileHeader* dest, std::ifstream& file);
+    void    readCentralDirectory(struct centralDirectory* dest, std::ifstream& file);
     void    readEndOfCentralDirectory(struct endOfCentralDirectory *dest, std::ifstream& file);
 }
 

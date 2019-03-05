@@ -104,6 +104,30 @@ namespace   zipReader {
 		if (dest->commentLength > 0)
 			std::cout << "comment: " <<  dest->comment << std::endl;
 	}
+	void    readEncryptionHeader(struct localFileHeader* dest, std::ifstream& file){
+
+	}
+
+	void    readDataDescriptor(struct localFileHeader* dest, std::ifstream& file){
+		uint32_t		*signature = new uint32_t;
+		uint32_t		lfh_signature = 0x04034B50;
+		uint32_t		cd_signature = 0x02014B50;
+
+		for(size_t pos = file.tellg(); ;pos++){
+			file.seekg(pos, std::ios::beg);
+			file.read(reinterpret_cast<char*>(signature), 4);
+			if (*signature == lfh_signature || *signature == cd_signature) {
+				file.seekg(pos -16,std::ios::beg);
+				file.read(reinterpret_cast<char*>(&dest->descriptor->headerSignature),	4);
+				if (dest->descriptor->headerSignature == 0x8074b50){
+					file.read(reinterpret_cast<char*>(&dest->descriptor->crc32),        	4);
+					file.read(reinterpret_cast<char*>(&dest->descriptor->compressedSize),	4);
+					file.read(reinterpret_cast<char*>(&dest->descriptor->uncompressedSize),	4);
+				}
+				break;
+			}
+		}
+	}
 
 	void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file){
 		file.seekg(-4, std::ios::cur);
@@ -119,9 +143,6 @@ namespace   zipReader {
 		file.read(reinterpret_cast<char *>(&dest->uncompressedSize),           	4);
 		file.read(reinterpret_cast<char *>(&dest->fileNameLength),            	2);
 		file.read(reinterpret_cast<char *>(&dest->extraFieldLength),          	2);
-		
-		std::cout << dest->compressionMethod << std::endl;
-
 		if (dest->fileNameLength > 0) {
 			dest->filename = new char[dest->fileNameLength + 1];
 			file.read(dest->filename, dest->fileNameLength);
@@ -132,22 +153,20 @@ namespace   zipReader {
 			file.read(dest->extraField, dest->extraFieldLength);
 			dest->extraField[dest->extraFieldLength] = '\0';
 		}
-		size_t data_start_byte = file.tellg();
-
-		if (dest->compressionMethod > STORED)
-			dest->dataLength = dest->compressedSize;
-		else
-			dest->dataLength = dest->uncompressedSize;
-		dest->data = new char[dest->dataLength + 1];
-		file.read(dest->data, dest->dataLength);
-		dest->data[dest->dataLength] = '\0';
-
+		dest->dataStartOffset = file.tellg();
+		readDataDescriptor(dest, file);
+		dest->dataLength = dest->uncompressedSize > 0? dest->uncompressedSize : dest->descriptor->uncompressedSize;
+		dest->crc32 = dest->crc32 != 0? dest->crc32 : dest->descriptor->crc32;
+		file.seekg(dest->dataStartOffset,std::ios::beg);
 		if (dest->bitFlag & 1) {
 			dest->isEncrypted = true;
 			if (dest->bitFlag & (1 << 6))
 				dest->strongEncryption = true;
+			readEncryptionHeader(dest, file);			
 		}
-
+		dest->data = new char[dest->dataLength + 1];
+		file.read(dest->data, dest->dataLength);
+		dest->data[dest->dataLength] = '\0';
 		std::cout << "====================================" << std::endl;
 		std::cout << "====== L0CAL FILE HEADER ======" << std::endl;
 		std::cout << "====================================" << std::endl;
@@ -161,16 +180,20 @@ namespace   zipReader {
 		std::cout << "crc32: " << reinterpret_cast<unsigned int*>(dest->crc32) <<std::endl;
 		std::cout << "compressedSize: " << reinterpret_cast<unsigned int*>(dest->compressedSize) <<std::endl;
 		std::cout << "uncompressedSize: " << reinterpret_cast<unsigned int*>(dest->uncompressedSize) <<std::endl;
-		std::cout << "DATA LENGTH" << dest->dataLength<<std::endl;
 		std::cout << "filename length: " << dest->fileNameLength <<std::endl;
 		std::cout << "extrafield length: " << dest->extraFieldLength <<std::endl;
 		if (dest->fileNameLength > 0)
 			std::cout << "@@@@@fileName: " << dest->filename <<" (length:"<< dest->fileNameLength << ")"<<std::endl;
 		if (dest->extraFieldLength > 0) 
 			std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
-		if (dest->uncompressedSize > 0) 
+		if (dest->dataLength > 0)
 			std::cout << "@@@@@data: " << dest->data <<" (length:"<< dest->dataLength<<")"<<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
-		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;		
+		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;
+		std::cout << "data start offset(or encryption header):" << dest->dataStartOffset <<std::endl;
+		std::cout << "DESCRIPTOR crc32:" << dest->descriptor->crc32 << std::endl;
+		std::cout << "DESCRIPTOR compressedSize:" << dest->descriptor->compressedSize << std::endl;
+		std::cout << "DESCRIPTOR uncompressedSize:" << dest->descriptor->uncompressedSize << std::endl;
+		std::cout << "DESCRIPTOR headerSignature:" << dest->descriptor->headerSignature << std::endl;
 	}
 }
