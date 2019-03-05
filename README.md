@@ -25,7 +25,7 @@ TODO:
 - [ ] rainbow tables
 - [ ] multithreads
 - [ ] Graphic card (openCL/CUDA)
-- [ ] improve arguments
+- [X] improve arguments
 - [ ] clean and improve understanding of the code
 - [ ] compile with clang and g++, compare perf
 - [ ] Zip
