@@ -16,9 +16,12 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/Lib/argparse.hpp)
 
 
-find_package(OpenSSL)
+find_package( OpenSSL REQUIRED )
+find_package( OpenCL REQUIRED )
+include_directories( ${OPENCL_INCLUDE_DIR} )
 set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address  -std=c++11") #-Wshadow
 target_link_libraries(Bf OpenSSL::SSL)
+target_link_libraries(Bf ${OPENCL_LIBRARIES})
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("use clang")
