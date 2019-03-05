@@ -31,3 +31,4 @@ TODO:
 - [ ] Zip
 - [ ] sha3
 - [ ] HMAC
+- [ ] AES 256
