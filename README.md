@@ -6,7 +6,7 @@ Just a simple bruteforce algorithm for fun :)
 
     #############################################
     
-    FOR OPENCL, IN DON'T KNOW HOW TO INSTALL IT ON UBUNTU/DEBIAN SYSTEM, GOOGLE IS YOUR FRIEND :)
+    FOR OPENCL, I DON'T KNOW HOW TO INSTALL IT ON UBUNTU/DEBIAN SYSTEM, GOOGLE IS YOUR FRIEND :)
     
     #############################################
 
