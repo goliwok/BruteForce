@@ -13,14 +13,14 @@ zipCracker::zipCracker(const std::string& filename) :
 	_file(filename.c_str(), std::ios::in | std::ios::binary),
 	_eocd_offset(0),
 	_cd({}),
-	_eocd({})
+	_eocd({})          
 {
-	std::cout << "new zipcracker with file:"<< filename<<std::endl;	
-}
+	std::cout << "new zipcracker with file:"<< filename<<std::endl;	    
+}                                          
 
 zipCracker::~zipCracker() {
 	for (auto i: _cd)
-		delete i;
+		delete i; 
 }
 
 bool		zipCracker::_checkHeader(void) {	
@@ -28,7 +28,7 @@ bool		zipCracker::_checkHeader(void) {
 	uint32_t	zip_signature = 0x04034b50;
 	bool		found;
 
-	_file.read(reinterpret_cast<char*>(header_signature), 4);
+	_file.read(reinterpret_cast<char*>(header_signature), 4);         
 	found = *header_signature == zip_signature;
 	delete header_signature;
 	return found;
@@ -42,7 +42,7 @@ bool		zipCracker::_getEndOfCentralDirectoryOffset(void) {
 
 	_file.seekg(-4, std::ios::end);
 	i = _file.tellg();
-	for (; i > 3;) {
+	for (; i > 0;) {
 		_file.seekg(i, std::ios::beg);
 		_file.read(reinterpret_cast<char*>(signature), 4);
 		if (!found_end && *signature == eocd_signature) {
@@ -55,9 +55,29 @@ bool		zipCracker::_getEndOfCentralDirectoryOffset(void) {
 	delete signature;
 	return found;
 }
+
+void				zipCracker::_aggressiveFindLFH(void) {
+	uint32_t		lfh_signature = 0x04034B50;
+	uint32_t		*signature = new uint32_t;
+	localFileHeader *lfh;
+	_file.seekg(0, std::ios::beg);
+
+	for (size_t i = _file.tellg(); i < _eocd_offset; i++){
+		_file.seekg(i, std::ios::beg);
+		_file.read(reinterpret_cast<char*>(signature), 4);
+		if (*signature == lfh_signature){
+			lfh = new localFileHeader;
+			zipReader::readLocalFileHeader(lfh, _file);
+			_lfh.push_back(lfh);
+		}
+	}
+}
+
 void		zipCracker::_initStructures(void) {
 	_file.seekg(_eocd_offset, std::ios::beg);
 	zipReader::readEndOfCentralDirectory(&_eocd, _file);
+	if (_eocd_offset == 0)
+		std::cout << "File contains ONLY  end of central directory (empty file)" << std::endl;
 	centralDirectory *cd;
 	_file.seekg(_eocd.centralDirectoryOffset, std::ios::beg);
 	for (int i = 0; i <= _eocd.numberOfEntries - 1; i++) {
@@ -65,13 +85,7 @@ void		zipCracker::_initStructures(void) {
 		zipReader::readCentralDirectory(cd, _file);
 		_cd.push_back(cd);
 	}
-	_file.seekg(0, std::ios::beg);
-	localFileHeader *lfh;
-	for (int i = 0; i <= _eocd.numberOfEntries - 1; i++) {
-		lfh = new localFileHeader;
-		zipReader::readLocalFileHeader(lfh, _file);	
-		_lfh.push_back(lfh);
-	}
+	_aggressiveFindLFH();
 }
 
 bool		zipCracker::isValid(void) {

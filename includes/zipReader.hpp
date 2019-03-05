@@ -17,7 +17,7 @@ struct endOfCentralDirectory {
     uint32_t headerSignature;
     uint16_t numberDisk;
     uint16_t startOffset;
-    uint16_t startDisk;
+    uint16_t startDisk;              
     uint16_t numberOfEntries;
     uint32_t centralDirectorySize;
     uint32_t centralDirectoryOffset;

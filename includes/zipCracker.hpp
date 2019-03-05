@@ -26,6 +26,7 @@ class           zipCracker
     	bool				_checkHeader(void);
     	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);
+        void                _aggressiveFindLFH(void);
 
     	const std::string	_filename;
     	std::ifstream		_file;

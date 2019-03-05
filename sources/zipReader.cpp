@@ -106,6 +106,7 @@ namespace   zipReader {
 
 	}
 	void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file){
+		file.seekg(file.tellg() - 4, std::ios::beg);
 		size_t save = file.tellg();
 		file.read(reinterpret_cast<char *>(&dest->headerSignature),				4);
 		file.read(reinterpret_cast<char *>(&dest->versionNeededToExtract),		2);
@@ -118,7 +119,6 @@ namespace   zipReader {
 		file.read(reinterpret_cast<char *>(&dest->uncompressedSize),           	4);
 		file.read(reinterpret_cast<char *>(&dest->fileNameLength),            	2);
 		file.read(reinterpret_cast<char *>(&dest->extraFieldLength),          	2);
-
 		if (dest->fileNameLength > 0) {
 			dest->filename = new char[dest->fileNameLength + 1];
 			file.read(dest->filename, dest->fileNameLength);
@@ -129,7 +129,7 @@ namespace   zipReader {
 			file.read(dest->extraField, dest->extraFieldLength);
 			dest->extraField[dest->extraFieldLength] = '\0';
 		}
-
+		size_t data_offset = file.tellg();
 		if (dest->uncompressedSize > 0) {
 			dest->data = new char[dest->uncompressedSize + 1];
 			file.read(dest->data, dest->uncompressedSize);
