@@ -9,11 +9,13 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/arguments.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/arguments.hpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
-		    		        ${CMAKE_CURRENT_LIST_DIR}/sources/zipCracker.cpp
- 	            	    ${CMAKE_CURRENT_LIST_DIR}/includes/zipCracker.hpp
- 	            	    ${CMAKE_CURRENT_LIST_DIR}/sources/zipReader.cpp
- 	            	    ${CMAKE_CURRENT_LIST_DIR}/includes/zipReader.hpp
-                    ${CMAKE_CURRENT_LIST_DIR}/includes/Lib/argparse.hpp)
+		    		${CMAKE_CURRENT_LIST_DIR}/sources/zipCracker.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/zipCracker.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/sources/zipReader.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/zipReader.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/Lib/argparse.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/sources/zipCrypto.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/zipCrypto.hpp)
 
 
 find_package(OpenSSL)

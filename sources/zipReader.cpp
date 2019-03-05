@@ -127,6 +127,7 @@ namespace   zipReader {
 				break;
 			}
 		}
+		delete signature;
 	}
 
 	void    readLocalFileHeader(struct localFileHeader* dest, std::ifstream& file){

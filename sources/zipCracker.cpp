@@ -135,7 +135,7 @@ bool					zipCracker::crack(void) {
 	}
 	if (smallestSize == 0) {
 		std::cout << "The largest file is 0bytes....... nothing really interesting to crack !" << std::endl;
-		//return false;
+		return false;
 	}
 	char 				*encryptionHeader 	= new char[12];
 	char 				*buf               	= new char[_lfh[smallestLFH]->dataLength];
@@ -149,4 +149,5 @@ bool					zipCracker::crack(void) {
 	delete[] encryptionHeader;
 	delete[] buf;
 	delete[] buffer;
+	return true;
 }

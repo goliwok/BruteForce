@@ -32,7 +32,7 @@ int     main (int ac, const char **av)
         zipCracker *cracker = new zipCracker(options->getKey());
         if (!cracker->isValid()) 
             exit(1);
-        cracker->crack();
+        if (!cracker->crack());
         exit(0);
     }
     BruteForce bf(options);
