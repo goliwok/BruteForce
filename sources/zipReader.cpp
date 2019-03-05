@@ -133,14 +133,14 @@ namespace   zipReader {
 			dest->extraField[dest->extraFieldLength] = '\0';
 		}
 		size_t data_start_byte = file.tellg();
-		size_t data_size = 0;
+
 		if (dest->compressionMethod > STORED)
-			data_size = dest->compressedSize;
+			dest->dataLength = dest->compressedSize;
 		else
-			data_size = dest->uncompressedSize;
-		dest->data = new char[data_size + 1];
-		file.read(dest->data, data_size);
-		dest->data[data_size] = '\0';
+			dest->dataLength = dest->uncompressedSize;
+		dest->data = new char[dest->dataLength + 1];
+		file.read(dest->data, dest->dataLength);
+		dest->data[dest->dataLength] = '\0';
 
 		if (dest->bitFlag & 1) {
 			dest->isEncrypted = true;
@@ -161,6 +161,7 @@ namespace   zipReader {
 		std::cout << "crc32: " << reinterpret_cast<unsigned int*>(dest->crc32) <<std::endl;
 		std::cout << "compressedSize: " << reinterpret_cast<unsigned int*>(dest->compressedSize) <<std::endl;
 		std::cout << "uncompressedSize: " << reinterpret_cast<unsigned int*>(dest->uncompressedSize) <<std::endl;
+		std::cout << "DATA LENGTH" << dest->dataLength<<std::endl;
 		std::cout << "filename length: " << dest->fileNameLength <<std::endl;
 		std::cout << "extrafield length: " << dest->extraFieldLength <<std::endl;
 		if (dest->fileNameLength > 0)
@@ -168,7 +169,7 @@ namespace   zipReader {
 		if (dest->extraFieldLength > 0) 
 			std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
 		if (dest->uncompressedSize > 0) 
-			std::cout << "@@@@@data: " << dest->data <<" (length:"<< dest->uncompressedSize<<")"<<std::endl;
+			std::cout << "@@@@@data: " << dest->data <<" (length:"<< dest->dataLength<<")"<<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
 		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;		
 	}

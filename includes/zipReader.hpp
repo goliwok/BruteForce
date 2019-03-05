@@ -113,7 +113,7 @@ struct localFileHeader {
     uint32_t uncompressedSize;
     uint16_t fileNameLength;
     uint16_t extraFieldLength;
-
+    uint32_t dataLength;
     char    *filename;
     char    *extraField;
     char    *data;
@@ -124,6 +124,7 @@ struct localFileHeader {
     localFileHeader() {
         isEncrypted = false;
         strongEncryption = false;
+        dataLength = 0;
     }
 };
 

@@ -118,3 +118,9 @@ bool		zipCracker::isValid(void) {
 	_initStructures();
 	return true;
 }
+
+bool	zipCracker::crack(void) {
+	for (auto i: _lfh) {
+		std::cout << i->dataLength << std::endl;
+	}
+}

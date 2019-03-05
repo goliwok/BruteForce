@@ -30,7 +30,9 @@ int     main (int ac, const char **av)
     options->parseArguments();
     if (parser->exists("zip")) {
         zipCracker *cracker = new zipCracker(options->getKey());
-        cracker->isValid();
+        if (!cracker->isValid()) 
+            exit(1);
+        cracker->crack();
         exit(0);
     }
     BruteForce bf(options);

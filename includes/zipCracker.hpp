@@ -21,7 +21,7 @@ class           zipCracker
         ~zipCracker();
 
         bool				isValid(void);
-
+        bool                crack(void);
     private:
     	bool				_checkHeader(void);
     	bool 				_getEndOfCentralDirectoryOffset(void);
