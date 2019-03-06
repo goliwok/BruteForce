@@ -17,9 +17,8 @@ add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/zipCrypto.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/zipCrypto.hpp)
 
-
 find_package( OpenSSL REQUIRED )
-
+find_package( OpenCL )
 include_directories( ${OPENCL_INCLUDE_DIR} )
 set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address  -std=c++11") #-Wshadow
 target_link_libraries(Bf OpenSSL::SSL)
