@@ -13,6 +13,7 @@
 #include        <fstream>
 #include        <vector>
 #include        <map>
+
 enum CompressionMethod {
     STORED      = 0,
     SHRUNK      = 1,

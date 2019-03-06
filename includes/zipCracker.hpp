@@ -12,6 +12,8 @@
 #include		<iostream>
 #include		<fstream>
 #include		<vector>
+#include        <stdio.h>
+#include        <string.h>
 #include		"zipReader.hpp"
 
 class           zipCracker

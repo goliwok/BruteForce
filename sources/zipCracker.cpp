@@ -7,7 +7,7 @@
 */
 
 #include	"zipCracker.hpp"
-
+#include "zipCrypto.hpp"
 zipCracker::zipCracker(const std::string& filename) : 
 	_filename(filename),
 	_file(filename.c_str(), std::ios::in | std::ios::binary),
@@ -138,16 +138,41 @@ bool					zipCracker::crack(void) {
 		return false;
 	}
 	char 				*encryptionHeader 	= new char[12];
-	char 				*buf               	= new char[_lfh[smallestLFH]->dataLength];
 	uint8_t 			*buffer				= new uint8_t[12];
 
 	_file.seekg(_lfh[smallestLFH]->dataStartOffset, std::ios::beg);
 	_file.read(encryptionHeader, 12);
-	_file.read(buf, _lfh[smallestLFH]->dataLength);
 	_file.close();
 
+	uint16_t checkByte;
+	if (_lfh[smallestLFH]->bitFlag & 0x8) {
+		checkByte = (_lfh[smallestLFH]->lastModFileTime >> 8) & 0xff;
+		std::cout << "FLAG ISSET"<<std::endl;
+	}else{
+		checkByte = (_lfh[smallestLFH]->crc32 >> 24) & 0xff;
+		std::cout << "FLAG not set"<<std::endl;
+	}
+	std::cout <<"CHECKBYTE:"<< checkByte <<std::endl;
+
+	initKeys("toto");
+	size_t i;
+	memcpy(buffer, encryptionHeader, 12);
+	for ( i = 0; i < 12; ++i ) {
+		std::cout << "||" << +buffer[i];
+	}
+	std::cout << std::endl;
+	for ( i = 0; i < 12; ++i ) {
+		updateKeys(buffer[i] ^= decryptByte());
+	}
+
+	uint8_t check_crc = _lfh[smallestLFH]->crc32 >> 24;
+	uint8_t check_deflated	=  _lfh[smallestLFH]->lastModFileTime >> 8;
+	for ( i = 0; i < 12; ++i ) {
+		std::cout << "||" << +buffer[i];
+	}
+	std::cout << "\ncheck_crc:" << +check_crc << "\ncheck deflated:"<< +check_deflated<<std::endl;
+
 	delete[] encryptionHeader;
-	delete[] buf;
 	delete[] buffer;
 	return true;
 }
