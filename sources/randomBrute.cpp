@@ -13,5 +13,7 @@ bool		randomBrute::configure(dict& options) {
 }
 
 void		randomBrute::brute(){
-	_cracker->crack("toto");
+	if (_cracker->crack("toto")){
+		std::cout << "password found"<<std::endl;
+	}
 }

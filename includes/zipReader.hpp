@@ -93,7 +93,6 @@ struct centralDirectory {
     bool    strongEncryption;
 
     ~centralDirectory() {
-        
         if (fileNameLength >  0)
             delete[] filename;
         if (extraFieldLength > 0)
@@ -157,8 +156,6 @@ struct localFileHeader {
             delete[] filename;
         if (extraFieldLength > 0)
             delete[] extraField;
-        if (dataLength > 0)
-            delete[] data;
     }
 };
 

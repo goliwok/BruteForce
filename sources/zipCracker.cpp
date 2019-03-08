@@ -122,9 +122,6 @@ bool			zipCracker::selectSmallestFile(void) {
 	_file.read(_encryptionHeader, 12);
 	for (auto i: _cd)
 		delete i;
-	for (auto i: _lfh)
-		if (i != _lfh[smallestLFH])
-			delete i;
 	return true;
 }
 

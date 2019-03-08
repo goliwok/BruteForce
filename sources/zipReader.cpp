@@ -165,9 +165,7 @@ namespace   zipReader {
 				dest->strongEncryption = true;
 			readEncryptionHeader(dest, file);			
 		}
-		dest->data = new char[dest->dataLength + 1];
-		file.read(dest->data, dest->dataLength);
-		dest->data[dest->dataLength] = '\0';
+
 		std::cout << "====================================" << std::endl;
 		std::cout << "====== L0CAL FILE HEADER ======" << std::endl;
 		std::cout << "====================================" << std::endl;
@@ -188,7 +186,7 @@ namespace   zipReader {
 		if (dest->extraFieldLength > 0) 
 			std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
 		if (dest->dataLength > 0)
-			std::cout << "@@@@@data: " << dest->data <<" (length:"<< dest->dataLength<<")"<<std::endl;
+			std::cout << "@@@@@data:length:"<< dest->dataLength<<")"<<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;
 		std::cout << "strong encryption:" << dest->strongEncryption <<std::endl;
 		std::cout << "data start offset(or encryption header):" << dest->dataStartOffset <<std::endl;
