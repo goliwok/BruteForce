@@ -15,7 +15,6 @@ zipCracker::zipCracker()
 	_eocd_offset = 0;
 	_cd = {};
 	_eocd = {};
-	std::cout << "new zipcracker with file:"<< _filename<<std::endl;	    
 }                                          
 
 zipCracker::~zipCracker() {
@@ -23,6 +22,7 @@ zipCracker::~zipCracker() {
 		delete i;
 	for (auto i: _lfh)
 		delete i;
+	_file.close();
 }
 
 bool		zipCracker::_checkHeader(void) {	
@@ -94,7 +94,8 @@ void		zipCracker::_initStructures(void) {
 	_aggressiveFindLFH();
 }
 
-bool		zipCracker::isValid(const dict args) {
+bool		zipCracker::configure(dict& args) {
+	_filename = args["--file"].front();
 	_file.open(_filename.c_str(), std::ios::in | std::ios::binary);
 	if (!_file.is_open()) {
 		std::cerr << "I can't open this file -> " << _filename <<std::endl;
@@ -179,8 +180,4 @@ bool					zipCracker::crackOLD(void) {
 	delete[] encryptionHeader;
 	delete[] buffer;
 	return true;
-}
-
-bool                zipCracker::configure(dict& options) {
-	std::cout << "Configuring zipcracker with file: " << options["--file"].front() << std::endl;
 }

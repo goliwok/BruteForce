@@ -20,12 +20,12 @@ class           zipCracker: public ICracker {
         zipCracker();
         ~zipCracker();
 
-        bool				isValid(const dict args);
         bool                crackOLD(void);
+        bool                crack();
         bool                configure(dict& options);
-        bool    crack();
 
     private:
+        bool                isValid(const dict args);
     	bool				_checkHeader(void);
     	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);

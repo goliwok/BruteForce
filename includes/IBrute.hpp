@@ -8,6 +8,7 @@
 
 #include        <iostream>
 #include        <map>
+#include        <memory>
 #include        <vector>
 #include        "ICracker.hpp"
 typedef std::map<std::string, std::vector<std::string>> dict;
@@ -22,11 +23,11 @@ public:
     virtual void	brute(void) = 0;
     virtual bool        configure(dict& options) = 0;
 
-    void			setCracker(ICracker *c) {
+    void			setCracker(std::shared_ptr<ICracker> c) {
     	_cracker = c;
     }
 
 protected:
-	ICracker		*_cracker;
+	std::shared_ptr<ICracker>  _cracker;
 };
 #endif      /*_IBRUTE_HPP_*/

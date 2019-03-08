@@ -148,6 +148,16 @@ struct localFileHeader {
         isEncrypted = strongEncryption = false;
         dataLength = 0;
     }
+    ~localFileHeader() {
+        delete descriptor;
+        delete  eh;
+        if (fileNameLength >  0)
+            delete[] filename;
+        if (extraFieldLength > 0)
+            delete[] extraField;
+        if (dataLength > 0)
+            delete[] data;
+    }
 };
 
 namespace   zipReader {
