@@ -11,6 +11,7 @@
 
 #include		<fstream>
 #include        <stdio.h>
+#include        <string>
 #include        <string.h>
 #include		"zipReader.hpp"
 #include        "ICracker.hpp"
@@ -20,12 +21,11 @@ class           zipCracker: public ICracker {
         zipCracker();
         ~zipCracker();
 
-        bool                crackOLD(void);
-        bool                crack();
+        bool                crack(char  *passwd);
         bool                configure(dict& options);
 
     private:
-        bool                isValid(const dict args);
+        bool                selectSmallestFile(void);
     	bool				_checkHeader(void);
     	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);
@@ -38,6 +38,10 @@ class           zipCracker: public ICracker {
     	endOfCentralDirectory 				_eocd;
     	std::vector<centralDirectory *>		_cd;
     	std::vector<localFileHeader *>		_lfh;
+        localFileHeader                     *_lightLFH;
+
+        uint8_t             *_buffer;
+        char                *_encryptionHeader;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/

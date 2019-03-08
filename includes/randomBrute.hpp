@@ -13,10 +13,8 @@
 class   randomBrute: public IBrute
 {
 public:
-    randomBrute();
-    ~randomBrute();
-	
 	bool	configure(dict& options);
     void    brute(void);
 };
+
 #endif      /*_RANDOMBRUTE_HPP_*/

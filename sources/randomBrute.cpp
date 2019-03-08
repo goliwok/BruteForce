@@ -8,15 +8,10 @@
 
 #include	"randomBrute.hpp"
 
-randomBrute::randomBrute() {}
-
-randomBrute::~randomBrute() {}
-
 bool		randomBrute::configure(dict& options) {
-	std::cout <<"Configuring random brute force" << std::endl;
 	return true;
 }
 
 void		randomBrute::brute(){
-	_cracker->crack();
+	_cracker->crack("toto");
 }

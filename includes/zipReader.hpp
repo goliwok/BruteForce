@@ -9,7 +9,7 @@
 #ifndef         _ZIPREADER_HPP_
 #define         _ZIPREADER_HPP_
 
-#include		<iostream>
+#include        <iostream>
 #include        <fstream>
 #include        <vector>
 #include        <map>
@@ -93,6 +93,7 @@ struct centralDirectory {
     bool    strongEncryption;
 
     ~centralDirectory() {
+        
         if (fileNameLength >  0)
             delete[] filename;
         if (extraFieldLength > 0)
@@ -119,6 +120,7 @@ struct dataDescriptor {
 };
 
 struct localFileHeader {
+    uint16_t checkByte;    
     uint32_t headerSignature;
     uint16_t versionNeededToExtract;
     uint16_t bitFlag;
@@ -150,7 +152,7 @@ struct localFileHeader {
     }
     ~localFileHeader() {
         delete descriptor;
-        delete  eh;
+        delete eh;
         if (fileNameLength >  0)
             delete[] filename;
         if (extraFieldLength > 0)

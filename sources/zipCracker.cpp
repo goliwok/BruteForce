@@ -15,15 +15,20 @@ zipCracker::zipCracker()
 	_eocd_offset = 0;
 	_cd = {};
 	_eocd = {};
+	_encryptionHeader = new char[12];
+	_buffer	= new uint8_t[12];
+
 }                                          
 
 zipCracker::~zipCracker() {
-	for (auto i: _cd)
-		delete i;
+	_file.close();
+	delete[] _encryptionHeader;
+	delete[] _buffer;
 	for (auto i: _lfh)
 		delete i;
-	_file.close();
+	//delete[] _lightLFH;
 }
+
 
 bool		zipCracker::_checkHeader(void) {	
 	uint32_t	*header_signature = new uint32_t;
@@ -94,6 +99,35 @@ void		zipCracker::_initStructures(void) {
 	_aggressiveFindLFH();
 }
 
+bool			zipCracker::selectSmallestFile(void) {
+	uint32_t	smallestSize = 0;
+	size_t		smallestLFH;
+
+	for (size_t i = 0; i < _lfh.size(); i++) {
+		std::cout << "file:"<< _lfh[i]->filename << " length: " << _lfh[i]->dataLength << std::endl;
+		if (smallestSize == 0 || _lfh[i]->dataLength <= smallestSize) {
+			smallestLFH = i;
+			smallestSize = _lfh[i]->dataLength;
+		}
+	}
+	if (smallestSize == 0) {
+		std::cout << "The largest file is 0bytes....... nothing really interesting to crack !" << std::endl;
+		return false;
+	}
+	_lightLFH = _lfh[smallestLFH];
+	std::cout << "SELECTED file: "<< _lightLFH->filename << std::endl;
+	_lightLFH->checkByte = (_lightLFH->bitFlag & 0x8) ? (_lightLFH->lastModFileTime >> 8) & 0xff : (_lightLFH->crc32 >> 24) & 0xff;
+	_file.seekg(_lightLFH->dataStartOffset, std::ios::beg);
+	std::cout << "check byte "<<_lightLFH->checkByte<<std::endl;;
+	_file.read(_encryptionHeader, 12);
+	for (auto i: _cd)
+		delete i;
+	for (auto i: _lfh)
+		if (i != _lfh[smallestLFH])
+			delete i;
+	return true;
+}
+
 bool		zipCracker::configure(dict& args) {
 	_filename = args["--file"].front();
 	_file.open(_filename.c_str(), std::ios::in | std::ios::binary);
@@ -118,66 +152,24 @@ bool		zipCracker::configure(dict& args) {
 	}
 	std::cout << "Found Central directory at: 0x"<< std::hex <<_eocd_offset<< std::endl;
 	_initStructures();
-	if (_lfh.size() == 0){
-		std::cout << "no local file header found" << std::endl;
+	if (!selectSmallestFile()) {
 		return false;
 	}
 	return true;
 }
 
-bool					zipCracker::crack(void){
-	std::cout <<"lolje crack"<<std::endl;
-}
-bool					zipCracker::crackOLD(void) {
-	uint32_t			smallestSize = 0;
-	uint32_t			smallestLFH;
+bool					zipCracker::crack(char  *passwd){
+	size_t 				i;
 
-	for (size_t i = 0; i < _lfh.size(); i++) {
-		if (smallestSize == 0 || _lfh[i]->dataLength <= smallestSize){
-			smallestLFH = i;
-			smallestSize = _lfh[i]->dataLength;
-		}
+	_buffer[0] = '\0';
+	initKeys(reinterpret_cast<char *>(&passwd[0]));
+	memcpy(_buffer, _encryptionHeader, 12);
+	for (i = 0; i < 12; ++i) {
+		updateKeys(_buffer[i] ^= decryptByte());
 	}
-	if (smallestSize == 0) {
-		std::cout << "The largest file is 0bytes....... nothing really interesting to crack !" << std::endl;
-		return false;
+	if (_buffer[11] == _lightLFH->checkByte) {
+		std::cout << "Motde passe PEUT-ETRE trouvé: "<< passwd<<std::endl;
+		return true;
 	}
-	char 				*encryptionHeader 	= new char[12];
-	uint8_t 			*buffer				= new uint8_t[12];
-
-	_file.seekg(_lfh[smallestLFH]->dataStartOffset, std::ios::beg);
-	_file.read(encryptionHeader, 12);
-	_file.close();
-
-	uint16_t checkByte;
-	if (_lfh[smallestLFH]->bitFlag & 0x8) {
-		checkByte = (_lfh[smallestLFH]->lastModFileTime >> 8) & 0xff;
-		std::cout << "FLAG ISSET"<<std::endl;
-	}else{
-		checkByte = (_lfh[smallestLFH]->crc32 >> 24) & 0xff;
-		std::cout << "FLAG not set"<<std::endl;
-	}
-	std::cout <<"CHECKBYTE:"<< checkByte <<std::endl;
-
-	initKeys("toto");
-	size_t i;
-	memcpy(buffer, encryptionHeader, 12);
-	for ( i = 0; i < 12; ++i ) {
-		std::cout << "||" << +buffer[i];
-	}
-	std::cout << std::endl;
-	for ( i = 0; i < 12; ++i ) {
-		updateKeys(buffer[i] ^= decryptByte());
-	}
-
-	uint8_t check_crc = _lfh[smallestLFH]->crc32 >> 24;
-	uint8_t check_deflated	=  _lfh[smallestLFH]->lastModFileTime >> 8;
-	for ( i = 0; i < 12; ++i ) {
-		std::cout << "||" << +buffer[i];
-	}
-	std::cout << "\ncheck_crc:" << +check_crc << "\ncheck deflated:"<< +check_deflated<<std::endl;
-
-	delete[] encryptionHeader;
-	delete[] buffer;
-	return true;
+	return false;
 }
