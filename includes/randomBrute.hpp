@@ -14,7 +14,16 @@ class   randomBrute: public IBrute
 {
 public:
 	bool	configure(dict& options);
-    void    brute(void);
+    bool    brute(void);
+
+
+private:
+	bool		_recurs(const std::string& str);
+	size_t		_maxLength;
+	std::string	_buffer;
+
+public:
+	static const std::string _range;
 };
 
 #endif      /*_RANDOMBRUTE_HPP_*/

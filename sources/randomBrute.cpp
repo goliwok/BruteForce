@@ -8,12 +8,26 @@
 
 #include	"randomBrute.hpp"
 
+const std::string randomBrute::_range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 bool		randomBrute::configure(dict& options) {
+	_maxLength = 5;
 	return true;
 }
 
-void		randomBrute::brute(){
-	if (_cracker->crack("toto")){
-		std::cout << "password found"<<std::endl;
+bool		randomBrute::_recurs(const std::string& str) {
+	if (_cracker->crack(const_cast<char*>(str.c_str())) || str.length() == _maxLength){
+		return true;
+	} else {
+		for(auto c : _range) {
+			std::string next = str + c;
+			std::cout << next <<  std::endl;
+			_recurs(next);
+      	}
 	}
+}
+
+bool		randomBrute::brute(){
+	return _recurs("");
+
 }

@@ -20,7 +20,7 @@ public:
     IBrute() {}
     ~IBrute() {}
 
-    virtual void	brute(void) = 0;
+    virtual bool    	brute(void) = 0;
     virtual bool        configure(dict& options) = 0;
 
     void			setCracker(std::shared_ptr<ICracker> c) {
