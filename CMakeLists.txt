@@ -4,18 +4,18 @@ project (BruteForce)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/sources)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/includes)
 
-add_executable (Bf ${CMAKE_CURRENT_LIST_DIR}/sources/bruteforce.cpp
-                    ${CMAKE_CURRENT_LIST_DIR}/includes/bruteForce.hpp
-                    ${CMAKE_CURRENT_LIST_DIR}/sources/arguments.cpp
-                    ${CMAKE_CURRENT_LIST_DIR}/includes/arguments.hpp
-                    ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
-		    		${CMAKE_CURRENT_LIST_DIR}/sources/zipCracker.cpp
+add_executable (Bf  ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
+		    		        ${CMAKE_CURRENT_LIST_DIR}/sources/zipCracker.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/zipCracker.hpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/zipReader.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/zipReader.hpp
-                    ${CMAKE_CURRENT_LIST_DIR}/includes/Lib/argparse.hpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/zipCrypto.cpp
-                    ${CMAKE_CURRENT_LIST_DIR}/includes/zipCrypto.hpp)
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/IBrute.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/ICracker.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/zipCrypto.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/randomBrute.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/sources/randomBrute.cpp
+                    )
 
 find_package( OpenSSL REQUIRED )
 find_package( OpenCL )

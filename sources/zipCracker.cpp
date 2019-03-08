@@ -7,15 +7,15 @@
 */
 
 #include	"zipCracker.hpp"
-#include "zipCrypto.hpp"
-zipCracker::zipCracker(const std::string& filename) : 
-	_filename(filename),
-	_file(filename.c_str(), std::ios::in | std::ios::binary),
-	_eocd_offset(0),
-	_cd({}),
-	_eocd({})          
+#include	"zipCrypto.hpp"
+
+zipCracker::zipCracker()          
 {
-	std::cout << "new zipcracker with file:"<< filename<<std::endl;	    
+	_filename = "";
+	_eocd_offset = 0;
+	_cd = {};
+	_eocd = {};
+	std::cout << "new zipcracker with file:"<< _filename<<std::endl;	    
 }                                          
 
 zipCracker::~zipCracker() {
@@ -94,7 +94,8 @@ void		zipCracker::_initStructures(void) {
 	_aggressiveFindLFH();
 }
 
-bool		zipCracker::isValid(void) {
+bool		zipCracker::isValid(const dict args) {
+	_file.open(_filename.c_str(), std::ios::in | std::ios::binary);
 	if (!_file.is_open()) {
 		std::cerr << "I can't open this file -> " << _filename <<std::endl;
 		return false;
@@ -123,7 +124,10 @@ bool		zipCracker::isValid(void) {
 	return true;
 }
 
-bool					zipCracker::crack(void) {
+bool					zipCracker::crack(void){
+	std::cout <<"lolje crack"<<std::endl;
+}
+bool					zipCracker::crackOLD(void) {
 	uint32_t			smallestSize = 0;
 	uint32_t			smallestLFH;
 
@@ -175,4 +179,8 @@ bool					zipCracker::crack(void) {
 	delete[] encryptionHeader;
 	delete[] buffer;
 	return true;
+}
+
+bool                zipCracker::configure(dict& options) {
+	std::cout << "Configuring zipcracker with file: " << options["--file"].front() << std::endl;
 }

@@ -1,7 +1,6 @@
 #ifndef     _BRUTEFORCE_HPP_
 #define     _BRUTEFORCE_HPP_
 
-#include "arguments.hpp"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -12,7 +11,7 @@ static clock_t stop;
 class   BruteForce
 {
     public:
-        BruteForce(Arguments *_options);
+        BruteForce();
         ~BruteForce();
 
         int     word(const int, int, bool);
@@ -22,7 +21,7 @@ class   BruteForce
     private:
         std::string     key;
         std::string     playground;
-        Arguments       *options;
+        //Arguments       *options;
         std::string     &generateSha1(std::string &, std::string &);
         std::string     &generateMd5(std::string &, std::string &);
         std::function<std::string &(std::string &, std::string &)> hashfunc;

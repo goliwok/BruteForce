@@ -9,28 +9,29 @@
 #ifndef         _ZIPCRACKER_HPP_
 #define         _ZIPCRACKER_HPP_
 
-#include		<iostream>
 #include		<fstream>
-#include		<vector>
 #include        <stdio.h>
 #include        <string.h>
 #include		"zipReader.hpp"
+#include        "ICracker.hpp"
 
-class           zipCracker
-{
+class           zipCracker: public ICracker {
     public:
-        zipCracker(const std::string& filename);
+        zipCracker();
         ~zipCracker();
 
-        bool				isValid(void);
-        bool                crack(void);
+        bool				isValid(const dict args);
+        bool                crackOLD(void);
+        bool                configure(dict& options);
+        bool    crack();
+
     private:
     	bool				_checkHeader(void);
     	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);
         void                _aggressiveFindLFH(void);
 
-    	const std::string	_filename;
+    	std::string        _filename;
     	std::ifstream		_file;
     	size_t				_eocd_offset;
 

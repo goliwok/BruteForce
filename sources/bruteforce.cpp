@@ -4,7 +4,7 @@
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 
-BruteForce::BruteForce(Arguments *_options)
+BruteForce::BruteForce()
 {
     options = _options;
     key = _options->getKey();
