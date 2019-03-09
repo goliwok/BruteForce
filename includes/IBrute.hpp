@@ -17,7 +17,9 @@ typedef std::map<std::string, std::vector<std::string>> dict;
 class   IBrute
 {
 public:
-    IBrute() :_nbTries(0), _bench(std::make_shared<benchMark>())
+    IBrute() :_nbTries(0), 
+        _finished(false),
+        _bench(std::make_shared<benchMark>())
          {}
 
     ~IBrute() {}
@@ -29,15 +31,19 @@ public:
     	_cracker = c;
     }
 
+    void                stop(){
+        _finished = true;
+        _bench->stop(_nbTries);
+    }
+
 protected:
 
     void        _update() { _nbTries++; }
     void        _start() { _bench->start(); }
     bool        _finish() {  _bench->stop(_nbTries); }
-
 	std::shared_ptr<ICracker>   _cracker;
-    __uint128_t                 _nbTries;
-
+    unsigned long long          _nbTries;
+    bool                        _finished;
 private:
     std::shared_ptr<benchMark>  _bench;
 };

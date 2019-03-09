@@ -8,11 +8,10 @@
 
 #include	"randomBrute.hpp"
 
-//const std::string randomBrute::_range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-const std::string randomBrute::_range = "adstadcoabc";
+const std::string randomBrute::_range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//const std::string randomBrute::_range = "azertyuipqsdfghjklm1234567890+-@";
 bool		randomBrute::configure(dict& options) {
-	_maxLength = 4;
-	_finished = false;
+	_maxLength = 6;
 	return true;
 }
 
@@ -23,10 +22,10 @@ const std::string&	randomBrute::_recurs(const std::string& str) {
 		_savedPassword = str;
 		return str;
 	}
-	_update();
 	if (str.length() == _maxLength || _finished){
 		return "";
 	} else {
+			_update();
 		for(auto c : _range) {
 			std::string next = str + c;
 			_recurs(next);
@@ -39,6 +38,7 @@ bool		randomBrute::brute(){
 
 	_start();
 	password = _recurs("");
+
 	if (_finished) {
 		std::cout <<"Found passwd!!->" << _savedPassword <<std::endl;
 		return true; 

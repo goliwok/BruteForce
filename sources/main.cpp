@@ -1,13 +1,23 @@
 #include "argParse.hpp"
 #include "zipCracker.hpp"
 #include "randomBrute.hpp"
-  #include <cmath>
 
+#include <csignal>
 
 typedef void (*func)(std::string);
 
+// ouille
+std::map<std::string, std::shared_ptr<IBrute>> Brutus;
+std::shared_ptr<IBrute>     bruteur;
+
+void    signal_handler(int signal){
+    bruteur->stop();
+    exit(0);
+}
+
 int     main (int ac, const char **av)
 {
+    std::signal(SIGINT, signal_handler);
     dict            options;
     argumentParser  *args = new argumentParser(ac, av);
     std::map<std::string, std::shared_ptr<ICracker>> Crackers;
@@ -22,20 +32,22 @@ int     main (int ac, const char **av)
     options = args->getOptions();
     std::string mode(options.find("--mode")->second.front());
     std::string crack(options.find("--crack")->second.front());
-
+    
     Crackers["zip"] = std::make_shared<zipCracker>();
     Brutus["random"] = std::make_shared<randomBrute>();
+
 
     if (Crackers.find(crack) == Crackers.end())
         args->printHelp("This cracking method (" + crack + ") is not implemented yet:\"(");
     if (Brutus.find(mode) == Brutus.end())
         args->printHelp("This bruteforce method (" + mode + ") is not implemented yet:\"(");
-    
-    if (Crackers[crack]->configure(options) && Brutus[mode]->configure(options)){
-        Brutus[mode]->setCracker(Crackers[crack]);
+
+    bruteur = Brutus[mode];    
+    if (Crackers[crack]->configure(options) && bruteur->configure(options)){
+        bruteur->setCracker(Crackers[crack]);
         delete args;
         //Let's gooooo
-        Brutus[mode]->brute();
+        bruteur->brute();
     } else
         delete args;
     return 0;

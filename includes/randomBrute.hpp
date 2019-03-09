@@ -24,7 +24,6 @@ private:
 	size_t		_maxLength;
 	static const std::string	_range;
 
-	bool		_finished;
 	std::string				_savedPassword;
 };
 

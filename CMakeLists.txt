@@ -22,7 +22,7 @@ add_executable (Bf  ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
 find_package( OpenSSL REQUIRED )
 find_package( OpenCL )
 include_directories( ${OPENCL_INCLUDE_DIR} )
-set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fsanitize=address -fopenmp -std=c++17") #-Wshadow
+set (CMAKE_CXX_FLAGS "-lssl -lcrypto -v -Wall -fopenmp -std=c++17") #-Wshadow
 target_link_libraries(Bf OpenSSL::SSL)
 target_link_libraries(Bf ${OPENCL_LIBRARIES})
 
