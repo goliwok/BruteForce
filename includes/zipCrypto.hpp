@@ -13,7 +13,6 @@
 extern uint32_t         keysCRC[3];
 extern const uint32_t   pcrc_32_tab[8][256];
 
-/* CRC-32C (iSCSI) polynomial in reversed bit order. */
 /*#define POLY 0x82f63b78*/
 
 /*#define POLY 0xedb88320 

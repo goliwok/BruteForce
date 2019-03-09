@@ -16,9 +16,8 @@ bool		randomBrute::configure(dict& options) {
 }
 
 bool		randomBrute::_recurs(const std::string& str) {
-	std::cout<<_cracker->crack(const_cast<char*>(str.c_str())) <<std::endl;
-	if (str.length() == _maxLength) {
-		return false;
+	if (_cracker->crack(const_cast<char*>(str.c_str())) || str.length() == _maxLength){
+		return true;
 	} else {
 		for(auto c : _range) {
 			std::string next = str + c;

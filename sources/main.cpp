@@ -136,6 +136,7 @@ private:
 };
 
 typedef void (*func)(std::string);
+
 int     main (int ac, const char **av)
 {
     dict            options;
@@ -161,12 +162,12 @@ int     main (int ac, const char **av)
     if (Brutus.find(mode) == Brutus.end())
         args->printHelp("This bruteforce method (" + mode + ") is not implemented yet:\"(");
     
-    if (Crackers[crack]->configure(options) && Brutus[mode]->configure(options)) {
+    if (Crackers[crack]->configure(options) && Brutus[mode]->configure(options)){
         Brutus[mode]->setCracker(Crackers[crack]);
+        delete args;
         //Let's gooooo
         Brutus[mode]->brute();
-    }
-    std::cout<<"ll"<<std::endl;
-    delete args;
+    } else
+        delete args;
     return 0;
 }

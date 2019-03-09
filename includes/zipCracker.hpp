@@ -13,7 +13,6 @@
 #include        <stdio.h>
 #include        <string>
 #include        <string.h>
-#include        <memory>
 #include		"zipReader.hpp"
 #include        "ICracker.hpp"
 
@@ -31,6 +30,7 @@ class           zipCracker: public ICracker {
     	bool 				_getEndOfCentralDirectoryOffset(void);
 		void 				_initStructures(void);
         void                _aggressiveFindLFH(void);
+        void                _clean();
 
     	std::string        _filename;
     	std::ifstream		_file;
@@ -39,12 +39,10 @@ class           zipCracker: public ICracker {
     	endOfCentralDirectory 				_eocd;
     	std::vector<centralDirectory *>		_cd;
     	std::vector<localFileHeader *>		_lfh;
-        localFileHeader    *_lightLFH;
+        lightLocalFileHeader                *_light;
 
         uint8_t             *_buffer;
-        unsigned char      *_buff;
-        char                *_data;
-        char                *_encryptionHeader;
+        unsigned char       *_tmp_buffer;
 };
 
 #endif      /*_ZIPCRACKER_HPP_*/

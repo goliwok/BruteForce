@@ -12,7 +12,6 @@
 #include        <iostream>
 #include        <fstream>
 #include        <vector>
-#include        <memory>
 #include        <map>
 
 enum CompressionMethod {
@@ -149,19 +148,31 @@ struct localFileHeader {
         eh = new encryptionHeader;
         isEncrypted = strongEncryption = false;
         dataLength = 0;
-        filename = NULL;
-        extraField = NULL;
     }
     ~localFileHeader() {
-        
         delete descriptor;
         delete eh;
-        
-        if (filename)
+        if (fileNameLength >  0)
             delete[] filename;
-        if (extraField)
+        if (extraFieldLength > 0)
             delete[] extraField;
-        
+    }
+};
+
+struct lightLocalFileHeader
+{
+    uint32_t    dataLength;
+    uint16_t    checkByte;
+    uint16_t    bitFlag;
+    uint16_t    compressionMethod;
+    uint32_t    crc32;
+    char        encryptionHeader[12];
+    char        *data;
+
+    ~lightLocalFileHeader(){
+        if (dataLength > 0)
+            delete[] data;
+
     }
 };
 

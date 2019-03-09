@@ -15,29 +15,30 @@ zipCracker::zipCracker()
 	_eocd_offset = 0;
 	_cd = {};
 	_eocd = {};
-	_data = NULL;
-	_buff = NULL;
-	_lightLFH = NULL;
-	_encryptionHeader = new char[12];
 	_buffer	= new uint8_t[12];
-
+	_tmp_buffer = NULL;	
+	_light = NULL;
 }                                          
 
 zipCracker::~zipCracker() {
-	if (_file.is_open())
-		_file.close();
-
-	delete[] _encryptionHeader;
+	_file.close();
+	_clean();
+	if (_tmp_buffer)
+		delete[] _tmp_buffer;
 	delete[] _buffer;
-	if (_data)
-		delete[] _data;
-	if (_buff)
-		delete[] _buff;
-	for (auto i: _lfh)
-		delete i;
-	for (auto i: _cd)
-		delete i;
-	//delete[] _lightLFH;
+	if (_light)
+		delete _light;
+}
+
+void	zipCracker::_clean() {
+	if (_lfh.size() > 0)
+		for (auto i: _lfh)
+			delete i;
+	if (_cd.size() > 0)
+		for (auto i: _cd)
+			delete i;
+	_lfh.clear();
+	_cd.clear();
 }
 
 
@@ -125,22 +126,25 @@ bool			zipCracker::selectSmallestFile(void) {
 		std::cout << "The largest file is 0bytes....... nothing really interesting to crack !" << std::endl;
 		return false;
 	}
-	_lightLFH = _lfh[smallestLFH];
+	_light = new lightLocalFileHeader;
+	_light->dataLength = _lfh[smallestLFH]->dataLength;
+	_light->checkByte = _lfh[smallestLFH]->checkByte;
+	_light->bitFlag = _lfh[smallestLFH]->bitFlag;
+	_light->compressionMethod = _lfh[smallestLFH]->compressionMethod;
+	_light->crc32 = _lfh[smallestLFH]->crc32;
+	//
 
-/*	_lightLFH->crc32 = _lfh[smallestLFH]->crc32;
-	_lightLFH->dataLength = _lfh[smallestLFH]->dataLength;
-	_lightLFH->bitFlag = _lfh[smallestLFH]->bitFlag;
-	_lightLFH->lastModFileTime = _lfh[smallestLFH]->lastModFileTime;
-	_lightLFH->compressionMethod = _lfh[smallestLFH]->compressionMethod;
-*/
-	//std::cout << "SELECTED file: "<< _lightLFH->filename << std::endl;
-	_lightLFH->checkByte = (_lightLFH->bitFlag & 0x8) ? (_lightLFH->lastModFileTime >> 8) & 0xff : (_lightLFH->crc32 >> 24) & 0xff;
+	std::cout << "SELECTED file: "<< _lfh[smallestLFH]->filename << std::endl;
+	_light->checkByte = (_lfh[smallestLFH]->bitFlag & 0x8) ? (_lfh[smallestLFH]->lastModFileTime >> 8) & 0xff : (_lfh[smallestLFH]->crc32 >> 24) & 0xff;
 	_file.seekg(_lfh[smallestLFH]->dataStartOffset, std::ios::beg);
-	std::cout << "encryption header start at: "<< _file.tellg() <<" check byte: "<<_lightLFH->checkByte<<std::endl;;
-	_file.read(_encryptionHeader, 12);
-	_data	= new char[_lightLFH->dataLength];
-	_buff	= new unsigned char[_lightLFH->dataLength];
-	_file.read(_data, _lightLFH->dataLength);
+	std::cout << "check byte "<<_light->checkByte<<std::endl;;
+
+	_light->data = new char[_light->dataLength];
+	_file.read(_light->encryptionHeader, 12);
+	_file.read(_light->data, _light->dataLength);
+	_tmp_buffer = new unsigned char[_light->dataLength];
+
+	_clean();
 	return true;
 }
 
@@ -168,36 +172,32 @@ bool		zipCracker::configure(dict& args) {
 	}
 	std::cout << "Found Central directory at: 0x"<< std::hex <<_eocd_offset<< std::endl;
 	_initStructures();
-	if (!selectSmallestFile()) {
+	if (!selectSmallestFile())
 		return false;
-	}
 	return true;
 }
 
-bool					zipCracker::crack(char  *passwd){
-	size_t 				i;
-	uint8_t				* buffer         = new uint8_t[12];
-	
-	//memset(_buffer,0, 12);
+bool				zipCracker::crack(char  *passwd){
+	size_t 			i;
+
 	initKeys(passwd);
-	memcpy(buffer, _encryptionHeader, 12);
-	for (i = 0; i < 12; ++i) { updateKeys(buffer[i] ^= decryptByte()); }
-	if (buffer[11] == _lightLFH->checkByte) {
-		std::cout <<"HEREEEEEEE"<<std::endl;
-		//std::cout << "Motde passe PEUT-ETRE trouvé: "<< passwd<<std::endl;
-		memcpy(_buff, _data, _lightLFH->dataLength);
-		for ( i = 0; i < _lightLFH->dataLength; ++i ) {
-			updateKeys(_buff[i] ^= decryptByte());
-		}
-		std::cout <<"lll"<<std::endl;
-		if ( _lightLFH->compressionMethod == 0) {
-			std::cout <<"check crc"<<std::endl;
-			if ( createCrc32(_buff, _lightLFH->dataLength) == _lightLFH->crc32 ) {
-					std::cout << "HOURA" << passwd<<std::endl;
-					return true;
-			}
-		}
+	memcpy(_buffer, _light->encryptionHeader, 12);
+	for (i = 0; i < 12; ++i) {
+		updateKeys(_buffer[i] ^= decryptByte());
 	}
-	delete[] buffer;
+	if (_buffer[11] == _light->checkByte) {		
+			memcpy(_tmp_buffer, _light->data, _light->dataLength);
+			for ( i = 0; i < _light->dataLength; ++i ) {
+				updateKeys(_tmp_buffer[i] ^= decryptByte());
+			}
+			if (_light->compressionMethod > 0){
+				std::cout << "NOT SUPPORTED compression method, cannot check if passwordis correct: "<<passwd<<std::endl;
+			} else {
+				if (createCrc32(_tmp_buffer, _light->dataLength) == _light->crc32){
+					std::cout << "eureka: "<<passwd<<std::endl;
+					return true;
+				}
+			}
+	}
 	return false;
 }
