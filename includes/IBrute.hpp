@@ -6,18 +6,20 @@
 #ifndef         _IBRUTE_HPP_
 #define         _IBRUTE_HPP_
 
-#include        <iostream>
-#include        <map>
-#include        <memory>
-#include        <vector>
 #include        "ICracker.hpp"
-typedef std::map<std::string, std::vector<std::string>> dict;
+#include        "benchMark.hpp"
+#include        <iostream>
+#include        <memory>
 
+
+typedef std::map<std::string, std::vector<std::string>> dict;
 
 class   IBrute
 {
 public:
-    IBrute() {}
+    IBrute() :_nbTries(0), _bench(std::make_shared<benchMark>())
+         {}
+
     ~IBrute() {}
 
     virtual bool    	brute(void) = 0;
@@ -28,6 +30,15 @@ public:
     }
 
 protected:
-	std::shared_ptr<ICracker>  _cracker;
+
+    void        _update() { _nbTries++; }
+    void        _start() { _bench->start(); }
+    bool        _finish() {  _bench->stop(_nbTries); }
+
+	std::shared_ptr<ICracker>   _cracker;
+    __uint128_t                 _nbTries;
+
+private:
+    std::shared_ptr<benchMark>  _bench;
 };
 #endif      /*_IBRUTE_HPP_*/

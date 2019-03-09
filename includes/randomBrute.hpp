@@ -9,6 +9,7 @@
 #define         _RANDOMBRUTE_HPP_
 
 #include        "IBrute.hpp"
+#include		"benchMark.hpp"
 
 class   randomBrute: public IBrute
 {
@@ -18,12 +19,13 @@ public:
 
 
 private:
-	bool		_recurs(const std::string& str);
-	size_t		_maxLength;
-	std::string	_buffer;
+	const std::string&		_recurs(const std::string& str);
 
-public:
-	static const std::string _range;
+	size_t		_maxLength;
+	static const std::string	_range;
+
+	bool		_finished;
+	std::string				_savedPassword;
 };
 
 #endif      /*_RANDOMBRUTE_HPP_*/

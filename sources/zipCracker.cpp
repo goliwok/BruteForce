@@ -194,7 +194,6 @@ bool				zipCracker::crack(char  *passwd){
 				std::cout << "NOT SUPPORTED compression method, cannot check if passwordis correct: "<<passwd<<std::endl;
 			} else {
 				if (createCrc32(_tmp_buffer, _light->dataLength) == _light->crc32){
-					std::cout << "eureka: "<<passwd<<std::endl;
 					return true;
 				}
 			}
