@@ -47,6 +47,31 @@ const uint32_t crc32Table[8][256] = {
     }
 };
 
+uint32_t createCrc32(const unsigned char* buf, size_t len) {
+    uint32_t* current = (uint32_t*)buf;
+    uint32_t one, two;
+    register uint32_t crc = 0xffffffff;
+
+    for ( ; len > 7; len -= 8 ) {
+        one = *current++ ^ crc;
+        two = *current++;
+        crc =
+            crc32Table[7][ one      & 0xff] ^
+            crc32Table[6][(one>> 8) & 0xff] ^
+            crc32Table[5][(one>>16) & 0xff] ^
+            crc32Table[4][ one>>24        ] ^
+            crc32Table[3][ two      & 0xff] ^
+            crc32Table[2][(two>> 8) & 0xff] ^
+            crc32Table[1][(two>>16) & 0xff] ^
+            crc32Table[0][ two>>24        ];
+    }
+    unsigned char* c = reinterpret_cast<unsigned char*>(current);
+    for ( ; len; --len ) {
+        crc = (crc >> 8) ^ crc32Table[0][(crc ^ *c++) & 0xff];
+    }
+    return ~crc;
+}
+
 unsigned char decryptByte() {
     register uint16_t temp = keysCRC[2] | 2;
     return (temp * (temp ^ 1)) >> 8;

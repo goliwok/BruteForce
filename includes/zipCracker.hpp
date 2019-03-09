@@ -13,6 +13,7 @@
 #include        <stdio.h>
 #include        <string>
 #include        <string.h>
+#include        <memory>
 #include		"zipReader.hpp"
 #include        "ICracker.hpp"
 
@@ -38,9 +39,11 @@ class           zipCracker: public ICracker {
     	endOfCentralDirectory 				_eocd;
     	std::vector<centralDirectory *>		_cd;
     	std::vector<localFileHeader *>		_lfh;
-        localFileHeader                     *_lightLFH;
+        localFileHeader    *_lightLFH;
 
         uint8_t             *_buffer;
+        unsigned char      *_buff;
+        char                *_data;
         char                *_encryptionHeader;
 };
 

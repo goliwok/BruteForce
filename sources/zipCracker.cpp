@@ -15,16 +15,27 @@ zipCracker::zipCracker()
 	_eocd_offset = 0;
 	_cd = {};
 	_eocd = {};
+	_data = NULL;
+	_buff = NULL;
+	_lightLFH = NULL;
 	_encryptionHeader = new char[12];
 	_buffer	= new uint8_t[12];
 
 }                                          
 
 zipCracker::~zipCracker() {
-	_file.close();
+	if (_file.is_open())
+		_file.close();
+
 	delete[] _encryptionHeader;
 	delete[] _buffer;
+	if (_data)
+		delete[] _data;
+	if (_buff)
+		delete[] _buff;
 	for (auto i: _lfh)
+		delete i;
+	for (auto i: _cd)
 		delete i;
 	//delete[] _lightLFH;
 }
@@ -115,13 +126,21 @@ bool			zipCracker::selectSmallestFile(void) {
 		return false;
 	}
 	_lightLFH = _lfh[smallestLFH];
-	std::cout << "SELECTED file: "<< _lightLFH->filename << std::endl;
+
+/*	_lightLFH->crc32 = _lfh[smallestLFH]->crc32;
+	_lightLFH->dataLength = _lfh[smallestLFH]->dataLength;
+	_lightLFH->bitFlag = _lfh[smallestLFH]->bitFlag;
+	_lightLFH->lastModFileTime = _lfh[smallestLFH]->lastModFileTime;
+	_lightLFH->compressionMethod = _lfh[smallestLFH]->compressionMethod;
+*/
+	//std::cout << "SELECTED file: "<< _lightLFH->filename << std::endl;
 	_lightLFH->checkByte = (_lightLFH->bitFlag & 0x8) ? (_lightLFH->lastModFileTime >> 8) & 0xff : (_lightLFH->crc32 >> 24) & 0xff;
-	_file.seekg(_lightLFH->dataStartOffset, std::ios::beg);
-	std::cout << "check byte "<<_lightLFH->checkByte<<std::endl;;
+	_file.seekg(_lfh[smallestLFH]->dataStartOffset, std::ios::beg);
+	std::cout << "encryption header start at: "<< _file.tellg() <<" check byte: "<<_lightLFH->checkByte<<std::endl;;
 	_file.read(_encryptionHeader, 12);
-	for (auto i: _cd)
-		delete i;
+	_data	= new char[_lightLFH->dataLength];
+	_buff	= new unsigned char[_lightLFH->dataLength];
+	_file.read(_data, _lightLFH->dataLength);
 	return true;
 }
 
@@ -157,16 +176,28 @@ bool		zipCracker::configure(dict& args) {
 
 bool					zipCracker::crack(char  *passwd){
 	size_t 				i;
-
-	_buffer[0] = '\0';
-	initKeys(reinterpret_cast<char *>(&passwd[0]));
-	memcpy(_buffer, _encryptionHeader, 12);
-	for (i = 0; i < 12; ++i) {
-		updateKeys(_buffer[i] ^= decryptByte());
+	uint8_t				* buffer         = new uint8_t[12];
+	
+	//memset(_buffer,0, 12);
+	initKeys(passwd);
+	memcpy(buffer, _encryptionHeader, 12);
+	for (i = 0; i < 12; ++i) { updateKeys(buffer[i] ^= decryptByte()); }
+	if (buffer[11] == _lightLFH->checkByte) {
+		std::cout <<"HEREEEEEEE"<<std::endl;
+		//std::cout << "Motde passe PEUT-ETRE trouvé: "<< passwd<<std::endl;
+		memcpy(_buff, _data, _lightLFH->dataLength);
+		for ( i = 0; i < _lightLFH->dataLength; ++i ) {
+			updateKeys(_buff[i] ^= decryptByte());
+		}
+		std::cout <<"lll"<<std::endl;
+		if ( _lightLFH->compressionMethod == 0) {
+			std::cout <<"check crc"<<std::endl;
+			if ( createCrc32(_buff, _lightLFH->dataLength) == _lightLFH->crc32 ) {
+					std::cout << "HOURA" << passwd<<std::endl;
+					return true;
+			}
+		}
 	}
-	if (_buffer[11] == _lightLFH->checkByte) {
-		std::cout << "Motde passe PEUT-ETRE trouvé: "<< passwd<<std::endl;
-		return true;
-	}
+	delete[] buffer;
 	return false;
 }

@@ -150,9 +150,9 @@ namespace   zipReader {
 			dest->filename[dest->fileNameLength] = '\0';
 		}
 		if (dest->extraFieldLength > 0) {
-			dest->extraField = new char[dest->extraFieldLength + 1];
+			/*dest->extraField = new char[dest->extraFieldLength + 1];
 			file.read(dest->extraField, dest->extraFieldLength);
-			dest->extraField[dest->extraFieldLength] = '\0';
+			dest->extraField[dest->extraFieldLength] = '\0';*/
 		}
 		dest->dataStartOffset = file.tellg();
 		readDataDescriptor(dest, file);
@@ -183,8 +183,8 @@ namespace   zipReader {
 		std::cout << "extrafield length: " << dest->extraFieldLength <<std::endl;
 		if (dest->fileNameLength > 0)
 			std::cout << "@@@@@fileName: " << dest->filename <<" (length:"<< dest->fileNameLength << ")"<<std::endl;
-		if (dest->extraFieldLength > 0) 
-			std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
+		//if (dest->extraFieldLength > 0) 
+		//	std::cout << "@@@@@extraField: " << dest->extraField <<" (length:"<< dest->extraFieldLength<<")"<<std::endl;
 		if (dest->dataLength > 0)
 			std::cout << "@@@@@data:length:"<< dest->dataLength<<")"<<std::endl;
 		std::cout << "encrypted:" << dest->isEncrypted <<std::endl;

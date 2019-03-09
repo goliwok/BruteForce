@@ -31,7 +31,7 @@ uint32_t    crc32c(uint32_t crc, const char *buf, size_t len){
 }
 */
 
-
+uint32_t createCrc32(const unsigned char* buf, size_t len);
 unsigned char   decryptByte();
 void            updateKeys(const int& c);
 void            initKeys(char *password);
