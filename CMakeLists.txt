@@ -17,6 +17,7 @@ add_executable (Bf  ${CMAKE_CURRENT_LIST_DIR}/sources/main.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/sources/randomBrute.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/argParse.hpp
                     ${CMAKE_CURRENT_LIST_DIR}/includes/benchMark.hpp
+                    ${CMAKE_CURRENT_LIST_DIR}/includes/readStdin.hpp
                     )
 
 find_package( OpenSSL REQUIRED )

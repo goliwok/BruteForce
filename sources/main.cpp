@@ -1,7 +1,7 @@
 #include "argParse.hpp"
 #include "zipCracker.hpp"
 #include "randomBrute.hpp"
-
+#include "readStdin.hpp"
 #include <csignal>
 
 typedef void (*func)(std::string);
@@ -35,6 +35,7 @@ int     main (int ac, const char **av)
     
     Crackers["zip"] = std::make_shared<zipCracker>();
     Brutus["random"] = std::make_shared<randomBrute>();
+    Brutus["stdin"] = std::make_shared<readStdin>();
 
 
     if (Crackers.find(crack) == Crackers.end())
