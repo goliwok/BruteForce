@@ -1,5 +1,16 @@
 Just a simple bruteforce algorithm for fun :) 
 
+	
+## Examples
+
+* Brute force a zip file from wordlist:
+
+`cat examples/wordlist.txt | ./Bf  --mode stdin --crack zip --file ./encrypted.zip`
+
+* Brute force a zip file from string permutations:
+
+`./Bf  --mode random --crack zip --file ./encrypted.zip`
+
 1) First download dependencies clang or g++, cmake, Opencl and libssl.
 
     on ubuntu/debian: sudo apt-get install cmake g++ clang-7 lldb-7 lld-7 libssl-dev 
